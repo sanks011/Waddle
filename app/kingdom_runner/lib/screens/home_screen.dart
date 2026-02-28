@@ -519,6 +519,10 @@ class _HomeScreenState extends State<HomeScreen> {
               final session = await activityProvider.stopSession();
 
               if (session != null && mounted) {
+                // ALWAYS reload territories and user stats after session ends
+                await _loadTerritories();
+                await authProvider.loadCurrentUser();
+
                 // Check if territory was created
                 if (session.territoryId != null) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -537,9 +541,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   );
-                  await _loadTerritories();
-                  // Refresh user data to update stats
-                  await authProvider.loadCurrentUser();
                 } else if (activityProvider.currentPath.length < 3) {
                   // Not enough points
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -585,8 +586,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 }
-                // Always refresh user data after session ends
-                await authProvider.loadCurrentUser();
               }
             } else {
               // Start calibration before session

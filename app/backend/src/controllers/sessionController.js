@@ -7,6 +7,8 @@ exports.createSession = async (req, res) => {
   try {
     const { id, path, startTime } = req.body;
 
+    console.log(`📝 Creating session ${id} for user ${req.user.username}`);
+
     const session = new ActivitySession({
       _id: id,
       userId: req.user._id,
@@ -16,21 +18,30 @@ exports.createSession = async (req, res) => {
     });
 
     await session.save();
+    console.log(`✅ Session ${id} created successfully`);
     res.status(201).json(session);
   } catch (error) {
     console.error('Create session error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 };
 
 // Complete session
 exports.completeSession = async (req, res) => {
   try {
-    const { path, distance } = req.body;
-    const session = await ActivitySession.findById(req.params.sessionId);
+    const { path, distance, startTime } = req.body;
+    let session = await ActivitySession.findById(req.params.sessionId);
 
+    // If session doesn't exist, create it on the fly
     if (!session) {
-      return res.status(404).json({ error: 'Session not found' });
+      console.log(`Session ${req.params.sessionId} not found, creating new one`);
+      session = new ActivitySession({
+        _id: req.params.sessionId,
+        userId: req.user._id,
+        path: [],
+        distance: 0,
+        startTime: startTime || new Date(),
+      });
     }
 
     if (session.userId.toString() !== req.user._id.toString()) {

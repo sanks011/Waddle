@@ -6,6 +6,10 @@ const { calculatePolygonArea } = require('../utils/geometry');
 exports.getTerritories = async (req, res) => {
   try {
     const territories = await Territory.find({ isActive: true }).sort({ createdAt: -1 });
+    console.log(`🗺️ Fetching all territories: ${territories.length} found`);
+    territories.forEach(t => {
+      console.log(`  - Territory ${t._id}: ${t.username}, ${t.area.toFixed(2)} m², ${t.polygon.length} points`);
+    });
     res.json(territories);
   } catch (error) {
     console.error('Get territories error:', error);
@@ -43,6 +47,7 @@ exports.createTerritory = async (req, res) => {
 
     await territory.save();
     console.log(`✅ Territory created: ${territory._id}`);
+    console.log(`📦 Returning territory: ${JSON.stringify({ id: territory._id, area: territory.area, polygon: territory.polygon.length + ' points' })}`);
 
     // Update user's total territory size
     const userTerritories = await Territory.find({ 

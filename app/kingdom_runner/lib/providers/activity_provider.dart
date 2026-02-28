@@ -38,6 +38,16 @@ class ActivityProvider extends ChangeNotifier {
       formsClosedLoop: false,
     );
 
+    // Create session in backend database
+    try {
+      print('📝 Creating session in backend: ${_currentSession!.id}');
+      await _apiService.createSession(_currentSession!);
+      print('✅ Session created in backend');
+    } catch (e) {
+      print('⚠️ Failed to create session in backend: $e');
+      // Continue anyway - session will be created when completed
+    }
+
     _isTracking = true;
 
     _locationService.startTracking((location) {
@@ -77,31 +87,46 @@ class ActivityProvider extends ChangeNotifier {
       );
 
       // If path has enough points, try to create territory
+      String? territoryId;
       if (_currentPath.length >= 3) {
         try {
+          // Test connection first
+          final isConnected = await _apiService.testConnection();
+          print(
+            '🔌 Backend connectivity: ${isConnected ? "Connected" : "Not connected"}',
+          );
+
+          if (!isConnected) {
+            print(
+              '⚠️ Cannot reach backend server. Territory creation will fail.',
+            );
+          }
+
           print(
             'Attempting to create territory with ${_currentPath.length} points',
           );
           final territory = await _apiService.createTerritory(_currentSession!);
           print('✅ Territory created successfully: ${territory.id}');
-
-          // Create new session instance with territoryId
-          completedSession = ActivitySession(
-            id: completedSession.id,
-            userId: completedSession.userId,
-            path: completedSession.path,
-            distance: completedSession.distance,
-            startTime: completedSession.startTime,
-            endTime: completedSession.endTime,
-            isCompleted: completedSession.isCompleted,
-            formsClosedLoop: completedSession.formsClosedLoop,
-            territoryId: territory.id,
-          );
+          print('📊 Territory area: ${territory.area} m²');
+          territoryId = territory.id;
         } catch (e) {
           print('⚠️ Territory creation failed: $e');
           // Don't fail the session if territory creation fails
         }
       }
+
+      // Create final session instance with territoryId (if created)
+      completedSession = ActivitySession(
+        id: completedSession.id,
+        userId: completedSession.userId,
+        path: completedSession.path,
+        distance: completedSession.distance,
+        startTime: completedSession.startTime,
+        endTime: completedSession.endTime,
+        isCompleted: completedSession.isCompleted,
+        formsClosedLoop: completedSession.formsClosedLoop,
+        territoryId: territoryId,
+      );
 
       notifyListeners();
       return completedSession;

@@ -33,6 +33,22 @@ class ApiService {
     };
   }
 
+  // Test connectivity to backend
+  Future<bool> testConnection() async {
+    try {
+      print('🔌 Testing connection to ${ApiConfig.baseUrl}/ping');
+      final response = await http
+          .get(Uri.parse('${ApiConfig.baseUrl}/ping'))
+          .timeout(const Duration(seconds: 10));
+
+      print('✅ Connection test: ${response.statusCode} - ${response.body}');
+      return response.statusCode == 200;
+    } catch (e) {
+      print('❌ Connection test failed: $e');
+      return false;
+    }
+  }
+
   // Auth endpoints
   Future<Map<String, dynamic>> register(
     String email,
@@ -123,42 +139,71 @@ class ApiService {
   }
 
   Future<Territory> createTerritory(ActivitySession session) async {
-    await token;
-    final headers = await getHeaders();
-    
-    print('🌍 Creating territory with ${session.path.length} points');
-    print('📍 Path sample: ${session.path.take(3).map((p) => '(${p.latitude}, ${p.longitude})')}');
-    
-    final response = await http.post(
-      Uri.parse('${ApiConfig.baseUrl}${ApiConfig.territoryEndpoint}'),
-      headers: headers,
-      body: jsonEncode(session.toJson()),
-    );
+    try {
+      await token;
+      final headers = await getHeaders();
 
-    print('📡 Territory creation response: ${response.statusCode}');
-    print('📄 Response body: ${response.body}');
+      print('🌍 Creating territory with ${session.path.length} points');
+      print('🔑 Token: ${await this.token != null ? "Present" : "Missing"}');
+      print('📡 API URL: ${ApiConfig.baseUrl}${ApiConfig.territoryEndpoint}');
+      print(
+        '📤 Request body length: ${jsonEncode(session.toJson()).length} bytes',
+      );
+      print(
+        '📍 Path sample: ${session.path.take(3).map((p) => '(${p.latitude}, ${p.longitude})')}',
+      );
 
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      return Territory.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to create territory: ${response.body}');
+      final requestBody = jsonEncode(session.toJson());
+      print('📦 Full request body: $requestBody');
+
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.territoryEndpoint}'),
+        headers: headers,
+        body: requestBody,
+      );
+
+      print('📡 Territory creation response: ${response.statusCode}');
+      print('📄 Response body: ${response.body}');
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return Territory.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception('Failed to create territory: ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      print('❌ Territory creation error: $e');
+      print('📚 Stack trace: $stackTrace');
+      rethrow;
     }
   }
 
   // Session endpoints
   Future<ActivitySession> createSession(ActivitySession session) async {
-    await token;
-    final headers = await getHeaders();
-    final response = await http.post(
-      Uri.parse('${ApiConfig.baseUrl}${ApiConfig.sessionEndpoint}'),
-      headers: headers,
-      body: jsonEncode(session.toJson()),
-    );
+    try {
+      await token;
+      final headers = await getHeaders();
 
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      return ActivitySession.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to create session: ${response.body}');
+      print('📝 Creating session: ${session.id}');
+      print('📡 API URL: ${ApiConfig.baseUrl}${ApiConfig.sessionEndpoint}');
+
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.sessionEndpoint}'),
+        headers: headers,
+        body: jsonEncode(session.toJson()),
+      );
+
+      print('📡 Create session response: ${response.statusCode}');
+      print('📄 Response: ${response.body}');
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return ActivitySession.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception('Failed to create session: ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      print('❌ Create session error: $e');
+      print('📚 Stack trace: $stackTrace');
+      rethrow;
     }
   }
 
@@ -166,27 +211,38 @@ class ApiService {
     String sessionId,
     ActivitySession session,
   ) async {
-    await token;
-    final headers = await getHeaders();
-    
-    print('🏁 Completing session: $sessionId');
-    print('📊 Distance: ${session.distance}m, Points: ${session.path.length}');
-    
-    final response = await http.put(
-      Uri.parse(
-        '${ApiConfig.baseUrl}${ApiConfig.sessionEndpoint}/$sessionId/complete',
-      ),
-      headers: headers,
-      body: jsonEncode(session.toJson()),
-    );
+    try {
+      await token;
+      final headers = await getHeaders();
 
-    print('📡 Complete session response: ${response.statusCode}');
-    print('📄 Response: ${response.body}');
+      print('🏁 Completing session: $sessionId');
+      print(
+        '📊 Distance: ${session.distance}m, Points: ${session.path.length}',
+      );
+      print(
+        '📡 API URL: ${ApiConfig.baseUrl}${ApiConfig.sessionEndpoint}/$sessionId/complete',
+      );
 
-    if (response.statusCode == 200) {
-      return ActivitySession.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to complete session: ${response.body}');
+      final response = await http.put(
+        Uri.parse(
+          '${ApiConfig.baseUrl}${ApiConfig.sessionEndpoint}/$sessionId/complete',
+        ),
+        headers: headers,
+        body: jsonEncode(session.toJson()),
+      );
+
+      print('📡 Complete session response: ${response.statusCode}');
+      print('📄 Response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return ActivitySession.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception('Failed to complete session: ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      print('❌ Session completion error: $e');
+      print('📚 Stack trace: $stackTrace');
+      rethrow;
     }
   }
 
