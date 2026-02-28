@@ -761,6 +761,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+<<<<<<< HEAD
           ],
         ),
       ),
@@ -789,6 +790,178 @@ class _HomeScreenState extends State<HomeScreen> {
               ? (isDarkMode ? Colors.black87 : Colors.white)
               : (isDarkMode ? Colors.white : Colors.black87),
           size: 24,
+=======
+        ],
+      ),
+
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+          if (index == 1) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const LeaderboardScreen()),
+            );
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.leaderboard),
+            label: 'Leaderboard',
+          ),
+        ],
+      ),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color:
+                  ((activityProvider.isTracking || _isCalibrating)
+                          ? Colors.red
+                          : Colors.green)
+                      .withOpacity(0.3),
+              blurRadius: 15,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () async {
+            if (activityProvider.isTracking || _isCalibrating) {
+              // Stop calibration if it was in progress
+              if (_isCalibrating) {
+                setState(() {
+                  _isCalibrating = false;
+                  _calibrationReadings = 0;
+                });
+
+                // If session hasn't started tracking yet, just stop the session
+                if (!activityProvider.isTracking) {
+                  await activityProvider.stopSession();
+                  return;
+                }
+              }
+
+              final session = await activityProvider.stopSession();
+
+              if (session != null && mounted) {
+                // ALWAYS reload territories and user stats after session ends
+                await _loadTerritories();
+                await authProvider.loadCurrentUser();
+
+                // Check if territory was created
+                if (session.territoryId != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: const [
+                          Icon(Icons.celebration, color: Colors.white),
+                          SizedBox(width: 12),
+                          Text('Territory claimed!'),
+                        ],
+                      ),
+                      backgroundColor: Colors.green,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                } else if (activityProvider.currentPath.length < 3) {
+                  // Not enough points
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: const [
+                          Icon(Icons.info_outline, color: Colors.white),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Walk more to create a territory (need at least 3 points)',
+                            ),
+                          ),
+                        ],
+                      ),
+                      backgroundColor: Colors.orange,
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                } else {
+                  // Session completed but no territory
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: const [
+                          Icon(Icons.check_circle_outline, color: Colors.white),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Session saved. Territory area may be too small.',
+                            ),
+                          ),
+                        ],
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                }
+              }
+            } else {
+              // Start calibration before session
+              setState(() {
+                _isCalibrating = true;
+                _calibrationReadings = 0;
+              });
+
+              final success = await activityProvider.startSession(
+                authProvider.currentUser?.id ?? '',
+              );
+              if (!success && mounted) {
+                setState(() {
+                  _isCalibrating = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Location permission required'),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                );
+              }
+            }
+          },
+          icon: Icon(
+            (activityProvider.isTracking || _isCalibrating)
+                ? Icons.stop
+                : Icons.play_arrow,
+            size: 28,
+          ),
+          label: Text(
+            (activityProvider.isTracking || _isCalibrating) ? 'Stop' : 'Start',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+          backgroundColor: (activityProvider.isTracking || _isCalibrating)
+              ? Colors.red
+              : Colors.green,
+          elevation: 0,
+>>>>>>> 650255e1b1b204d30e12a5788125563c31b7dffb
         ),
       ),
     );
