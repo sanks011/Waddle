@@ -31,6 +31,17 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Kingdom Runner API is running' });
 });
 
+// Ping endpoint for keeping server alive (useful for Render/Heroku free tier)
+app.get('/ping', (req, res) => {
+  const uptime = process.uptime();
+  res.json({ 
+    status: 'alive', 
+    message: 'Pong! Server is active',
+    timestamp: new Date().toISOString(),
+    uptime: `${Math.floor(uptime / 60)} minutes ${Math.floor(uptime % 60)} seconds`
+  });
+});
+
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://sahnik:vD5ZtaAKrBPRx29N@adifast.9p87bqm.mongodb.net/?appName=adiFast';
 

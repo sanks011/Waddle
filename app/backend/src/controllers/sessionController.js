@@ -37,6 +37,9 @@ exports.completeSession = async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
+    console.log(`Completing session ${req.params.sessionId} for user ${req.user.username}`);
+    console.log(`Path points: ${path ? path.length : 0}, Distance: ${distance}m`);
+
     // Calculate values
     const calculatedDistance = distance || calculateDistance(path);
     const formsLoop = isClosedLoop(path);
@@ -48,9 +51,13 @@ exports.completeSession = async (req, res) => {
     session.formsClosedLoop = formsLoop;
 
     await session.save();
+    console.log(`✅ Session saved: ${calculatedDistance.toFixed(2)}m, Loop: ${formsLoop}`);
 
     // Update user stats
     const user = await User.findById(req.user._id);
+    const previousDistance = user.totalDistance;
+    const previousStreak = user.activityStreak;
+    
     user.totalDistance += calculatedDistance;
     user.lastActivity = new Date();
     
@@ -66,6 +73,9 @@ exports.completeSession = async (req, res) => {
     }
 
     await user.save();
+    console.log(`✅ Updated user ${req.user.username}:`);
+    console.log(`   Distance: ${previousDistance.toFixed(2)}m → ${user.totalDistance.toFixed(2)}m (+${calculatedDistance.toFixed(2)}m)`);
+    console.log(`   Streak: ${previousStreak} → ${user.activityStreak} days`);
 
     res.json(session);
   } catch (error) {

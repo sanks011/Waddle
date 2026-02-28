@@ -92,7 +92,12 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return User.fromJson(jsonDecode(response.body));
+      final user = User.fromJson(jsonDecode(response.body));
+      print('👤 User data refreshed: ${user.username}');
+      print('📏 Total Distance: ${user.totalDistance}m');
+      print('🏰 Territory Size: ${user.territorySize}m²');
+      print('🔥 Streak: ${user.activityStreak} days');
+      return user;
     } else {
       throw Exception('Failed to load user: ${response.body}');
     }
@@ -109,7 +114,9 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => Territory.fromJson(json)).toList();
+      final territories = data.map((json) => Territory.fromJson(json)).toList();
+      print('🗺️ Loaded ${territories.length} territories');
+      return territories;
     } else {
       throw Exception('Failed to load territories: ${response.body}');
     }
@@ -118,11 +125,18 @@ class ApiService {
   Future<Territory> createTerritory(ActivitySession session) async {
     await token;
     final headers = await getHeaders();
+    
+    print('🌍 Creating territory with ${session.path.length} points');
+    print('📍 Path sample: ${session.path.take(3).map((p) => '(${p.latitude}, ${p.longitude})')}');
+    
     final response = await http.post(
       Uri.parse('${ApiConfig.baseUrl}${ApiConfig.territoryEndpoint}'),
       headers: headers,
       body: jsonEncode(session.toJson()),
     );
+
+    print('📡 Territory creation response: ${response.statusCode}');
+    print('📄 Response body: ${response.body}');
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       return Territory.fromJson(jsonDecode(response.body));
@@ -154,6 +168,10 @@ class ApiService {
   ) async {
     await token;
     final headers = await getHeaders();
+    
+    print('🏁 Completing session: $sessionId');
+    print('📊 Distance: ${session.distance}m, Points: ${session.path.length}');
+    
     final response = await http.put(
       Uri.parse(
         '${ApiConfig.baseUrl}${ApiConfig.sessionEndpoint}/$sessionId/complete',
@@ -161,6 +179,9 @@ class ApiService {
       headers: headers,
       body: jsonEncode(session.toJson()),
     );
+
+    print('📡 Complete session response: ${response.statusCode}');
+    print('📄 Response: ${response.body}');
 
     if (response.statusCode == 200) {
       return ActivitySession.fromJson(jsonDecode(response.body));

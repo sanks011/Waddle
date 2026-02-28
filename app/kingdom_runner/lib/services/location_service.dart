@@ -32,7 +32,7 @@ class LocationService {
   Future<LatLng?> getCurrentLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        desiredAccuracy: LocationAccuracy.bestForNavigation,
       );
       return LatLng(position.latitude, position.longitude);
     } catch (e) {
@@ -43,8 +43,8 @@ class LocationService {
 
   void startTracking(Function(LatLng) onLocationUpdate) {
     const locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 10, // Update every 10 meters
+      accuracy: LocationAccuracy.bestForNavigation,
+      distanceFilter: 5, // Update every 5 meters for more precision
     );
 
     _positionStreamSubscription =

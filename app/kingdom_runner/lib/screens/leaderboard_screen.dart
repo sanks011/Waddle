@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../models/user.dart';
 import '../services/api_service.dart';
+import '../widgets/shimmer_loading.dart';
+import '../utils/format_utils.dart';
 
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
@@ -76,68 +79,215 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           ),
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: 10,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: ShimmerLoading(
+                          width: double.infinity,
+                          height: 80,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      );
+                    },
+                  )
                 : _leaders.isEmpty
-                ? const Center(child: Text('No data available'))
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.leaderboard_outlined,
+                          size: 80,
+                          color: Colors.grey.withOpacity(0.5),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No data available',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                 : RefreshIndicator(
                     onRefresh: _loadLeaderboard,
                     child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
                       itemCount: _leaders.length,
                       itemBuilder: (context, index) {
                         final user = _leaders[index];
                         final rank = index + 1;
 
                         String value;
+                        IconData icon;
                         switch (_selectedType) {
                           case 'distance':
-                            value =
-                                '${(user.totalDistance / 1000).toStringAsFixed(2)} km';
+                            value = formatDistance(user.totalDistance);
+                            icon = Icons.directions_run;
                             break;
                           case 'streak':
                             value = '${user.activityStreak} days';
+                            icon = Icons.local_fire_department;
                             break;
                           default:
-                            value =
-                                '${(user.territorySize / 1000000).toStringAsFixed(2)} km²';
+                            value = formatArea(user.territorySize);
+                            icon = Icons.terrain;
                         }
 
-                        return Card(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: rank == 1
-                                  ? Colors.amber
-                                  : rank == 2
-                                  ? Colors.grey[400]
-                                  : rank == 3
-                                  ? Colors.brown[300]
-                                  : Colors.blue,
-                              child: Text(
-                                '#$rank',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                        return TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          duration: Duration(milliseconds: 300 + (index * 50)),
+                          curve: Curves.easeOut,
+                          builder: (context, animValue, child) {
+                            return Opacity(
+                              opacity: animValue,
+                              child: Container(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 10,
+                                      sigmaY: 10,
+                                    ),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.05),
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(
+                                          color: Colors.white.withOpacity(0.1),
+                                          width: 1.5,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.1,
+                                            ),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                          onTap: () {},
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(16.0),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: 50,
+                                                  height: 50,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.white
+                                                        .withOpacity(0.1),
+                                                    border: Border.all(
+                                                      color: Colors.white
+                                                          .withOpacity(0.3),
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                                  child: Center(
+                                                    child: rank <= 3
+                                                        ? Icon(
+                                                            Icons.star,
+                                                            color: Colors.white
+                                                                .withOpacity(
+                                                                  0.8,
+                                                                ),
+                                                            size: 24,
+                                                          )
+                                                        : Text(
+                                                            '$rank',
+                                                            style: TextStyle(
+                                                              color: Colors
+                                                                  .white
+                                                                  .withOpacity(
+                                                                    0.8,
+                                                                  ),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 18,
+                                                            ),
+                                                          ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        user.username,
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Row(
+                                                        children: [
+                                                          Icon(
+                                                            icon,
+                                                            size: 16,
+                                                            color: Colors.white
+                                                                .withOpacity(
+                                                                  0.6,
+                                                                ),
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 6,
+                                                          ),
+                                                          Text(
+                                                            value,
+                                                            style: TextStyle(
+                                                              fontSize: 14,
+                                                              color: Colors
+                                                                  .white
+                                                                  .withOpacity(
+                                                                    0.6,
+                                                                  ),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Icon(
+                                                  Icons.chevron_right,
+                                                  color: Colors.white
+                                                      .withOpacity(0.3),
+                                                  size: 24,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                            title: Text(
-                              user.username,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            trailing: Text(
-                              value,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                              ),
-                            ),
-                          ),
+                            );
+                          },
                         );
                       },
                     ),

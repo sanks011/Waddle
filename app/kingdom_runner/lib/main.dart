@@ -4,10 +4,14 @@ import 'providers/auth_provider.dart';
 import 'providers/activity_provider.dart';
 import 'providers/territory_provider.dart';
 import 'providers/theme_provider.dart';
+import 'services/ola_maps_config.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Load Ola Maps credentials from cache (if exists) before app starts
+  await OlaMapsConfig.loadFromCache();
   runApp(const MyApp());
 }
 
@@ -60,6 +64,11 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
   Future<void> _checkAutoLogin() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.tryAutoLogin();
+
+    // Ensure Ola Maps config is loaded before showing home screen
+    if (success && OlaMapsConfig.apiKey.isEmpty) {
+      await OlaMapsConfig.loadFromCache();
+    }
 
     setState(() {
       _isChecking = false;

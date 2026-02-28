@@ -46,8 +46,8 @@ const calculateDistance = (path) => {
   return totalDistance;
 };
 
-// Check if path forms a closed loop
-const isClosedLoop = (path, thresholdMeters = 50) => {
+// Check if path forms a closed loop - more lenient threshold
+const isClosedLoop = (path, thresholdMeters = 100) => {
   if (path.length < 3) return false;
 
   const start = path[0];
@@ -65,6 +65,7 @@ const isClosedLoop = (path, thresholdMeters = 50) => {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = R * c;
 
+  console.log(`Loop check: distance between start and end = ${distance.toFixed(2)}m (threshold: ${thresholdMeters}m)`);
   return distance <= thresholdMeters;
 };
 

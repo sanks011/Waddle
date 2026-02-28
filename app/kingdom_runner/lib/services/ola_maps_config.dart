@@ -46,15 +46,16 @@ class OlaMapsConfig {
         await _storage.write(key: 'ola_base_url', value: _baseUrl);
       } else {
         // Try loading from cache if network fails
-        await _loadFromCache();
+        await loadFromCache();
       }
     } catch (e) {
       // Fallback to cached credentials
-      await _loadFromCache();
+      await loadFromCache();
     }
   }
 
-  static Future<void> _loadFromCache() async {
+  // Load from cache (can be called before login)
+  static Future<void> loadFromCache() async {
     _projectId = await _storage.read(key: 'ola_project_id');
     _apiKey = await _storage.read(key: 'ola_api_key');
     _clientId = await _storage.read(key: 'ola_client_id');
@@ -72,9 +73,12 @@ class OlaMapsConfig {
       'https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/{z}/{x}/{y}.png';
   static String get baseUrl => _baseUrl ?? 'https://api.olamaps.io';
 
-  // Get tile URL with API key
-  static String getTileUrl() {
-    return '$tileUrl?api_key=$apiKey';
+  // Get tile URL with API key (light theme)
+  static String getTileUrl({bool isDark = false}) {
+    final style = isDark ? 'default-dark-standard' : 'default-light-standard';
+    final url =
+        'https://api.olamaps.io/tiles/vector/v1/styles/$style/{z}/{x}/{y}.png';
+    return '$url?api_key=$apiKey';
   }
 
   // Get headers for API requests
