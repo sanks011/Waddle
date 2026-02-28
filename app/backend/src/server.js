@@ -8,6 +8,7 @@ const userRoutes = require('./routes/users');
 const territoryRoutes = require('./routes/territories');
 const sessionRoutes = require('./routes/sessions');
 const leaderboardRoutes = require('./routes/leaderboard');
+const mapsRoutes = require('./routes/maps');
 const { startInactivityChecker } = require('./utils/inactivityChecker');
 
 const app = express();
@@ -17,16 +18,37 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Request logging
+app.use((req, res, next) => {
+  console.log(`📥 ${new Date().toISOString()} ${req.method} ${req.url}`);
+  if (req.method === 'POST' || req.method === 'PUT') {
+    console.log('📦 Body keys:', Object.keys(req.body || {}));
+  }
+  next();
+});
+
 // Routes
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/territories', territoryRoutes);
 app.use('/api/v1/sessions', sessionRoutes);
 app.use('/api/v1/leaderboard', leaderboardRoutes);
+app.use('/api/v1/maps', mapsRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Kingdom Runner API is running' });
+});
+
+// Ping endpoint for keeping server alive (useful for Render/Heroku free tier)
+app.get('/ping', (req, res) => {
+  const uptime = process.uptime();
+  res.json({ 
+    status: 'alive', 
+    message: 'Pong! Server is active',
+    timestamp: new Date().toISOString(),
+    uptime: `${Math.floor(uptime / 60)} minutes ${Math.floor(uptime % 60)} seconds`
+  });
 });
 
 // MongoDB Connection

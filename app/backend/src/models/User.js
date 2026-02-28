@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  lastStreakUpdate: {
+    type: Date,
+    default: null,
+  },
   lastActivity: {
     type: Date,
     default: Date.now,

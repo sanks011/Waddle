@@ -39,9 +39,8 @@ const territorySchema = new mongoose.Schema({
 });
 
 // Update lastUpdated before saving
-territorySchema.pre('save', function(next) {
+territorySchema.pre('save', function() {
   this.lastUpdated = Date.now();
-  next();
 });
 
 module.exports = mongoose.model('Territory', territorySchema);

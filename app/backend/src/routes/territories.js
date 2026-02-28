@@ -9,6 +9,9 @@ router.get('/', auth, territoryController.getTerritories);
 // Create new territory
 router.post('/', auth, territoryController.createTerritory);
 
+// Merge territories
+router.post('/merge', auth, territoryController.mergeTerritories);
+
 // Get user territories
 router.get('/user/:userId', auth, territoryController.getUserTerritories);
 

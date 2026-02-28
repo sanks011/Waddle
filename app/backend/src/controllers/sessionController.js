@@ -7,6 +7,8 @@ exports.createSession = async (req, res) => {
   try {
     const { id, path, startTime } = req.body;
 
+    console.log(`📝 Creating session ${id} for user ${req.user.username}`);
+
     const session = new ActivitySession({
       _id: id,
       userId: req.user._id,
@@ -16,26 +18,38 @@ exports.createSession = async (req, res) => {
     });
 
     await session.save();
+    console.log(`✅ Session ${id} created successfully`);
     res.status(201).json(session);
   } catch (error) {
     console.error('Create session error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 };
 
 // Complete session
 exports.completeSession = async (req, res) => {
   try {
-    const { path, distance } = req.body;
-    const session = await ActivitySession.findById(req.params.sessionId);
+    const { path, distance, startTime } = req.body;
+    let session = await ActivitySession.findById(req.params.sessionId);
 
+    // If session doesn't exist, create it on the fly
     if (!session) {
-      return res.status(404).json({ error: 'Session not found' });
+      console.log(`Session ${req.params.sessionId} not found, creating new one`);
+      session = new ActivitySession({
+        _id: req.params.sessionId,
+        userId: req.user._id,
+        path: [],
+        distance: 0,
+        startTime: startTime || new Date(),
+      });
     }
 
     if (session.userId.toString() !== req.user._id.toString()) {
       return res.status(403).json({ error: 'Unauthorized' });
     }
+
+    console.log(`Completing session ${req.params.sessionId} for user ${req.user.username}`);
+    console.log(`Path points: ${path ? path.length : 0}, Distance: ${distance}m`);
 
     // Calculate values
     const calculatedDistance = distance || calculateDistance(path);
@@ -48,24 +62,53 @@ exports.completeSession = async (req, res) => {
     session.formsClosedLoop = formsLoop;
 
     await session.save();
+    console.log(`✅ Session saved: ${calculatedDistance.toFixed(2)}m, Loop: ${formsLoop}`);
 
     // Update user stats
     const user = await User.findById(req.user._id);
+    const previousDistance = user.totalDistance;
+    const previousStreak = user.activityStreak;
+    
     user.totalDistance += calculatedDistance;
     user.lastActivity = new Date();
     
-    // Update activity streak
-    const daysSinceLastActivity = Math.floor(
-      (new Date() - new Date(user.lastActivity)) / (1000 * 60 * 60 * 24)
-    );
+    // Update activity streak (only once per day)
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     
-    if (daysSinceLastActivity <= 1) {
-      user.activityStreak += 1;
-    } else if (daysSinceLastActivity > 3) {
-      user.activityStreak = 1;
+    // Get the last streak update date (set to beginning of that day)
+    const lastStreakDate = user.lastStreakUpdate 
+      ? new Date(
+          user.lastStreakUpdate.getFullYear(),
+          user.lastStreakUpdate.getMonth(),
+          user.lastStreakUpdate.getDate()
+        )
+      : null;
+    
+    // Only update streak if this is the first session of the day
+    if (!lastStreakDate || today.getTime() !== lastStreakDate.getTime()) {
+      const daysSinceLastStreak = lastStreakDate
+        ? Math.floor((today - lastStreakDate) / (1000 * 60 * 60 * 24))
+        : 0;
+      
+      if (daysSinceLastStreak === 1) {
+        // Consecutive day - increment streak
+        user.activityStreak += 1;
+      } else if (daysSinceLastStreak === 0 || !lastStreakDate) {
+        // First ever session - start streak
+        user.activityStreak = 1;
+      } else {
+        // Missed days - reset streak
+        user.activityStreak = 1;
+      }
+      
+      user.lastStreakUpdate = now;
     }
 
     await user.save();
+    console.log(`✅ Updated user ${req.user.username}:`);
+    console.log(`   Distance: ${previousDistance.toFixed(2)}m → ${user.totalDistance.toFixed(2)}m (+${calculatedDistance.toFixed(2)}m)`);
+    console.log(`   Streak: ${previousStreak} → ${user.activityStreak} days`);
 
     res.json(session);
   } catch (error) {

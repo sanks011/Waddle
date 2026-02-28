@@ -3,10 +3,15 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/activity_provider.dart';
 import 'providers/territory_provider.dart';
+import 'providers/theme_provider.dart';
+import 'services/ola_maps_config.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Load Ola Maps credentials from cache (if exists) before app starts
+  await OlaMapsConfig.loadFromCache();
   runApp(const MyApp());
 }
 
@@ -17,18 +22,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ActivityProvider()),
         ChangeNotifierProvider(create: (_) => TerritoryProvider()),
       ],
-      child: MaterialApp(
-        title: 'Kingdom Runner',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-          useMaterial3: true,
-        ),
-        home: const AuthCheckScreen(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'Kingdom Runner',
+            debugShowCheckedModeBanner: false,
+            theme: themeProvider.lightTheme,
+            darkTheme: themeProvider.darkTheme,
+            themeMode: themeProvider.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
+            home: const AuthCheckScreen(),
+          );
+        },
       ),
     );
   }
@@ -53,6 +64,11 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
   Future<void> _checkAutoLogin() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.tryAutoLogin();
+
+    // Ensure Ola Maps config is loaded before showing home screen
+    if (success && OlaMapsConfig.apiKey.isEmpty) {
+      await OlaMapsConfig.loadFromCache();
+    }
 
     setState(() {
       _isChecking = false;

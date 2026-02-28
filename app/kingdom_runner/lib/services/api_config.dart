@@ -1,8 +1,8 @@
 class ApiConfig {
-  // Change this to your backend URL
-  static const String baseUrl = 'https://bhago-pro-jyh0.onrender.com'; // for Android emulator
+  // Production backend URL
+  static const String baseUrl = 'https://bhago-pro-jyh0.onrender.com';
+  // static const String baseUrl = 'http://10.0.2.2:3000'; // for Android emulator
   // static const String baseUrl = 'http://localhost:3000'; // for iOS simulator
-  // static const String baseUrl = 'https://your-backend-url.com'; // for production
 
   static const String apiVersion = '/api/v1';
 
@@ -12,4 +12,5 @@ class ApiConfig {
   static const String territoryEndpoint = '$apiVersion/territories';
   static const String sessionEndpoint = '$apiVersion/sessions';
   static const String leaderboardEndpoint = '$apiVersion/leaderboard';
+  static const String mapsEndpoint = '$apiVersion/maps';
 }

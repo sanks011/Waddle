@@ -1,20 +1,84 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'api_config.dart';
+
 class OlaMapsConfig {
-  // Ola Maps (Krutrim) Configuration
-  static const String projectId = 'f91a178a-6a5f-498d-8c08-1ed80a8e638e';
-  static const String apiKey = 'AW12ALkUUtywskoKBraA1aWWQMUfNylzH7izgU1e';
-  static const String clientId = 'f91a178a-6a5f-498d-8c08-1ed80a8e638e';
-  static const String clientSecret = '666f4cb7470045728fe2346d19f10efb';
+  static final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  // Ola Maps Tile Server URL
-  static const String tileUrl =
+  // Cache for credentials
+  static String? _projectId;
+  static String? _apiKey;
+  static String? _clientId;
+  static String? _clientSecret;
+  static String? _tileUrl;
+  static String? _baseUrl;
+
+  // Fetch credentials from backend (called once on app start)
+  static Future<void> initialize(String authToken) async {
+    try {
+      // Check if already cached
+      if (_apiKey != null) return;
+
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.mapsEndpoint}/config'),
+        headers: {
+          'Authorization': 'Bearer $authToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        _projectId = data['projectId'];
+        _apiKey = data['apiKey'];
+        _clientId = data['clientId'];
+        _clientSecret = data['clientSecret'];
+        _tileUrl = data['tileUrl'];
+        _baseUrl = data['baseUrl'];
+
+        // Cache in secure storage for offline use
+        await _storage.write(key: 'ola_project_id', value: _projectId);
+        await _storage.write(key: 'ola_api_key', value: _apiKey);
+        await _storage.write(key: 'ola_client_id', value: _clientId);
+        await _storage.write(key: 'ola_client_secret', value: _clientSecret);
+        await _storage.write(key: 'ola_tile_url', value: _tileUrl);
+        await _storage.write(key: 'ola_base_url', value: _baseUrl);
+      } else {
+        // Try loading from cache if network fails
+        await loadFromCache();
+      }
+    } catch (e) {
+      // Fallback to cached credentials
+      await loadFromCache();
+    }
+  }
+
+  // Load from cache (can be called before login)
+  static Future<void> loadFromCache() async {
+    _projectId = await _storage.read(key: 'ola_project_id');
+    _apiKey = await _storage.read(key: 'ola_api_key');
+    _clientId = await _storage.read(key: 'ola_client_id');
+    _clientSecret = await _storage.read(key: 'ola_client_secret');
+    _tileUrl = await _storage.read(key: 'ola_tile_url');
+    _baseUrl = await _storage.read(key: 'ola_base_url');
+  }
+
+  static String get projectId => _projectId ?? '';
+  static String get apiKey => _apiKey ?? '';
+  static String get clientId => _clientId ?? '';
+  static String get clientSecret => _clientSecret ?? '';
+  static String get tileUrl =>
+      _tileUrl ??
       'https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/{z}/{x}/{y}.png';
+  static String get baseUrl => _baseUrl ?? 'https://api.olamaps.io';
 
-  // Ola Maps API Base URL
-  static const String baseUrl = 'https://api.olamaps.io';
-
-  // Get tile URL with API key
-  static String getTileUrl() {
-    return '$tileUrl?api_key=$apiKey';
+  // Get tile URL with API key (light theme)
+  static String getTileUrl({bool isDark = false}) {
+    final style = isDark ? 'default-dark-standard' : 'default-light-standard';
+    final url =
+        'https://api.olamaps.io/tiles/vector/v1/styles/$style/{z}/{x}/{y}.png';
+    return '$url?api_key=$apiKey';
   }
 
   // Get headers for API requests

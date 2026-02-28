@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/user.dart';
 import '../services/api_service.dart';
+import '../services/ola_maps_config.dart';
 
 class AuthProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -46,6 +47,12 @@ class AuthProvider extends ChangeNotifier {
     try {
       final response = await _apiService.login(email, password);
       _currentUser = User.fromJson(response['user']);
+
+      // Initialize Ola Maps config with auth token
+      final token = await _apiService.token;
+      if (token != null) {
+        await OlaMapsConfig.initialize(token);
+      }
 
       // Save credentials for auto-login
       if (rememberMe) {
