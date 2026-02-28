@@ -86,21 +86,13 @@ class GeminiService {
   }
 
   // Save today's diet entry
-<<<<<<< HEAD
   static Future<void> saveDietEntry(double protein, double calories) async {
-=======
-  static Future<void> saveDietEntry(double protein, double carbs) async {
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
     final prefs = await SharedPreferences.getInstance();
     final now = DateTime.now();
     final dateKey =
         '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
-<<<<<<< HEAD
     final entry = DietEntry(date: now, protein: protein, calories: calories);
-=======
-    final entry = DietEntry(date: now, protein: protein, carbs: carbs);
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
 
     // Get existing history
     final historyJson = prefs.getString(_dietHistoryKey) ?? '{}';
@@ -238,11 +230,7 @@ Be accurate with your estimates. Only return the JSON object, nothing else.
     // Prepare prompt
     final dietData = entries
         .map((e) {
-<<<<<<< HEAD
           return '${e.date.month}/${e.date.day}: Protein ${e.protein.toStringAsFixed(0)}g, Calories ${e.calories.toStringAsFixed(0)}kcal';
-=======
-          return '${e.date.month}/${e.date.day}: Protein ${e.protein.toStringAsFixed(0)}g, Carbs ${e.carbs.toStringAsFixed(0)}g';
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
         })
         .join('\n');
 
@@ -253,11 +241,7 @@ Analyze this ${entries.length}-day diet history and provide a brief, friendly su
 $dietData
 
 Focus on:
-<<<<<<< HEAD
 1. Average daily protein and calorie intake
-=======
-1. Average daily protein and carb intake
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
 2. Consistency patterns
 3. One quick health recommendation
 

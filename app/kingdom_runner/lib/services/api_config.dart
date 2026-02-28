@@ -1,8 +1,8 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class ApiConfig {
-  // Production backend URL
-  static const String baseUrl = 'https://bhago-pro-jyh0.onrender.com';
-  // static const String baseUrl = 'http://10.0.2.2:3000'; // for Android emulator
-  // static const String baseUrl = 'http://localhost:3000'; // for iOS simulator
+  // Read backend base URL from environment (.env). Falls back to production URL.
+  static final String baseUrl = dotenv.env['BACKEND_URL'] ?? 'https://bhago-pro-jyh0.onrender.com';
 
   static const String apiVersion = '/api/v1';
 
@@ -13,4 +13,5 @@ class ApiConfig {
   static const String sessionEndpoint = '$apiVersion/sessions';
   static const String leaderboardEndpoint = '$apiVersion/leaderboard';
   static const String mapsEndpoint = '$apiVersion/maps';
+  static const String eventsEndpoint = '$apiVersion/events';
 }

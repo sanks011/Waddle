@@ -5,8 +5,11 @@ import 'providers/auth_provider.dart';
 import 'providers/activity_provider.dart';
 import 'providers/territory_provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/event_provider.dart';
+import 'providers/water_provider.dart';
 import 'services/ola_maps_config.dart';
 import 'services/gemini_service.dart';
+import 'services/water_notification_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/onboarding_screen.dart';
@@ -15,6 +18,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Load environment variables
   await dotenv.load(fileName: ".env");
+  // Initialize notification service + timezone data
+  try {
+    await WaterNotificationService.initialize();
+  } catch (_) {}
   // Load Ola Maps credentials from cache (if exists) before app starts
   await OlaMapsConfig.loadFromCache();
   // Initialize Gemini API service
@@ -33,6 +40,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ActivityProvider()),
         ChangeNotifierProvider(create: (_) => TerritoryProvider()),
+        ChangeNotifierProvider(create: (_) => EventProvider()),
+        ChangeNotifierProvider(create: (_) => WaterProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -72,27 +81,26 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.tryAutoLogin();
 
-    // Ensure Ola Maps config is loaded before showing home screen
-    if (success && OlaMapsConfig.apiKey.isEmpty) {
-      await OlaMapsConfig.loadFromCache();
-    }
+    if (!mounted) return;
 
-    setState(() {
-      _isChecking = false;
-    });
+    if (success) {
+      // Ensure Ola Maps config is loaded before showing home screen
+      if (OlaMapsConfig.apiKey.isEmpty) await OlaMapsConfig.loadFromCache();
 
-    if (success && mounted) {
-      // Check if onboarding is completed
+      // Navigate WITHOUT setting _isChecking = false first — avoids
+      // flashing the LoginScreen before the route transition.
       final onboardingDone = await authProvider.isOnboardingCompleted;
-      if (onboardingDone) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-        );
-      }
+      if (!mounted) return;
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) =>
+              onboardingDone ? const HomeScreen() : const OnboardingScreen(),
+        ),
+      );
+    } else {
+      // Only show LoginScreen when auto-login actually fails
+      setState(() => _isChecking = false);
     }
   }
 

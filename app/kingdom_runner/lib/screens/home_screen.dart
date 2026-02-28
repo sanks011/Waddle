@@ -14,6 +14,8 @@ import '../utils/format_utils.dart';
 import '../widgets/compass_widget.dart';
 import 'profile_screen.dart';
 import 'leaderboard_screen.dart';
+import 'events_screen.dart';
+import 'health_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isCalibrating = false;
   int _calibrationReadings = 0;
   double _heading = 0.0; // Compass heading
+  int _selectedTab = 2; // 0=Health, 1=Events, 2=Map, 3=Leaderboard, 4=Profile
+  final PageController _pageController = PageController(initialPage: 2);
 
   @override
   void initState() {
@@ -264,26 +268,38 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Always show current location marker
     if (!_isLoadingLocation) {
-      // Pointer color based on theme: bright red (light mode), orange (dark mode)
-      final pointerColor = isDarkMode ? Colors.orange : Colors.red.shade600;
+      final user = authProvider.currentUser;
+      final avatarPath = user?.avatarPath;
+      final primary = Theme.of(context).colorScheme.primary;
 
       markers.add(
         Marker(
           point: _currentPosition,
-          width: 50,
-          height: 50,
+          width: 56,
+          height: 56,
           child: Container(
             decoration: BoxDecoration(
-              color: pointerColor.withOpacity(0.3),
               shape: BoxShape.circle,
-              border: Border.all(
-                color: pointerColor.withOpacity(0.8),
-                width: 3,
-              ),
+              border: Border.all(color: Colors.white, width: 3),
+              boxShadow: [
+                BoxShadow(
+                  color: primary.withOpacity(0.5),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
+              image: avatarPath != null && avatarPath.isNotEmpty
+                  ? DecorationImage(
+                      image: AssetImage(avatarPath),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
+              color: primary,
             ),
-            child: Center(
-              child: Icon(Icons.circle, color: pointerColor, size: 15),
-            ),
+            child: avatarPath == null || avatarPath.isEmpty
+                ? const Icon(Icons.person_rounded,
+                    color: Colors.white, size: 28)
+                : null,
           ),
         ),
       );
@@ -306,11 +322,22 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SizedBox.expand(
-        child: Stack(
-          children: [
+      body: Stack(
+        children: [
+          PageView(
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            onPageChanged: (i) => setState(() => _selectedTab = i),
+            children: [
+              _KeepAlive(child: const HealthScreen()),
+              _KeepAlive(child: const EventsScreen()),
+              SizedBox.expand(
+                child: Stack(
+                  children: [
             // Map layer with brighter overlays in dark mode
             Positioned.fill(
               child: FlutterMap(
@@ -471,13 +498,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Row(
-                              children: const [
-                                Icon(Icons.celebration, color: Colors.white),
-                                SizedBox(width: 12),
-                                Text('Territory claimed!'),
+                              children: [
+                                Icon(Icons.celebration,
+                                    color: Theme.of(context).colorScheme.onPrimary),
+                                const SizedBox(width: 12),
+                                Text('Territory claimed!',
+                                    style: TextStyle(
+                                        color: Theme.of(context).colorScheme.onPrimary)),
                               ],
                             ),
-                            backgroundColor: Colors.green,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -485,21 +515,23 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       } else if (activityProvider.currentPath.length < 3) {
-                        // Not enough points
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Row(
-                              children: const [
-                                Icon(Icons.info_outline, color: Colors.white),
-                                SizedBox(width: 12),
+                              children: [
+                                Icon(Icons.info_outline,
+                                    color: Theme.of(context).colorScheme.onSurface),
+                                const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
                                     'Walk more to create a territory (need at least 3 points)',
+                                    style: TextStyle(
+                                        color: Theme.of(context).colorScheme.onSurface),
                                   ),
                                 ),
                               ],
                             ),
-                            backgroundColor: Colors.orange,
+                            backgroundColor: Theme.of(context).colorScheme.surface,
                             behavior: SnackBarBehavior.floating,
                             duration: const Duration(seconds: 4),
                             shape: RoundedRectangleBorder(
@@ -508,23 +540,23 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       } else {
-                        // Session completed but no territory
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Row(
-                              children: const [
-                                Icon(
-                                  Icons.check_circle_outline,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(width: 12),
+                              children: [
+                                Icon(Icons.check_circle_outline,
+                                    color: Theme.of(context).colorScheme.onSurface),
+                                const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
                                     'Session saved. Territory area may be too small.',
+                                    style: TextStyle(
+                                        color: Theme.of(context).colorScheme.onSurface),
                                   ),
                                 ),
                               ],
                             ),
+                            backgroundColor: Theme.of(context).colorScheme.surface,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -563,24 +595,30 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: (activityProvider.isTracking || _isCalibrating)
+                      colors: _isCalibrating
                           ? [
-                              const Color(0xFFDC2626), // red-600
-                              const Color(0xFFB91C1C), // red-700
+                              const Color(0xFFD97706),
+                              const Color(0xFFB45309),
+                            ]
+                          : activityProvider.isTracking
+                          ? [
+                              const Color(0xFFDC2626),
+                              const Color(0xFFB91C1C),
                             ]
                           : [
-                              const Color(0xFF10B981), // emerald-500
-                              const Color(0xFF059669), // emerald-600
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.primary,
                             ],
                     ),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color:
-                            ((activityProvider.isTracking || _isCalibrating)
+                        color: (_isCalibrating
+                                ? const Color(0xFFD97706)
+                                : activityProvider.isTracking
                                     ? const Color(0xFFDC2626)
-                                    : const Color(0xFF10B981))
-                                .withOpacity(0.4),
+                                    : Theme.of(context).colorScheme.primary)
+                            .withOpacity(0.4),
                         blurRadius: 15,
                         spreadRadius: 2,
                         offset: const Offset(0, 4),
@@ -588,16 +626,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   child: Icon(
-                    (activityProvider.isTracking || _isCalibrating)
-                        ? Icons.stop_rounded
-                        : Icons.play_arrow_rounded,
+                    _isCalibrating
+                        ? Icons.sensors_rounded
+                        : activityProvider.isTracking
+                            ? Icons.stop_rounded
+                            : Icons.play_arrow_rounded,
                     color: Colors.white,
                     size: 32,
                   ),
                 ),
               ),
             ),
-            if (activityProvider.isTracking)
+            if (activityProvider.isTracking && !_isCalibrating)
               Positioned(
                 bottom: 100,
                 left: 20,
@@ -692,78 +732,106 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-            // Calibration overlay
             if (_isCalibrating)
               Positioned.fill(
                 child: Container(
-                  color: (isDarkMode
-                      ? Colors.black.withOpacity(0.7)
-                      : Colors.black.withOpacity(0.7)),
+                  color: Colors.black.withOpacity(0.65),
                   child: Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: Container(
-                          margin: const EdgeInsets.all(32),
-                          padding: const EdgeInsets.all(32),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.3),
-                              width: 1.5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface.withOpacity(0.92),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                                width: 1.5,
+                              ),
                             ),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.directions_walk,
-                                size: 48,
-                                color: Colors.white,
-                              ),
-                              const SizedBox(height: 24),
-                              const Text(
-                                'Calibrating Location',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              const Text(
-                                'Walk a few steps to calibrate\nyour location for accuracy',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              SizedBox(
-                                width: 200,
-                                child: LinearProgressIndicator(
-                                  value: _calibrationReadings / 5,
-                                  backgroundColor: Colors.white.withOpacity(
-                                    0.2,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Icon with amber glow
+                                Container(
+                                  width: 72,
+                                  height: 72,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: const Color(0xFFD97706).withOpacity(0.15),
+                                    border: Border.all(
+                                      color: const Color(0xFFD97706).withOpacity(0.5),
+                                      width: 2,
+                                    ),
                                   ),
-                                  valueColor:
-                                      const AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
+                                  child: const Icon(
+                                    Icons.sensors_rounded,
+                                    size: 36,
+                                    color: Color(0xFFD97706),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  'Calibrating Location',
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Walk a few steps so we can\nlock onto your position accurately',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                const SizedBox(height: 24),
+                                // Progress bar
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: LinearProgressIndicator(
+                                    value: _calibrationReadings / 5,
+                                    minHeight: 8,
+                                    backgroundColor: Theme.of(context).dividerColor,
+                                    valueColor: const AlwaysStoppedAnimation<Color>(
+                                      Color(0xFFD97706),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  '${_calibrationReadings} / 5 readings',
+                                  style: Theme.of(context).textTheme.labelSmall,
+                                ),
+                                const SizedBox(height: 24),
+                                // Stop calibration button
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: OutlinedButton.icon(
+                                    onPressed: () async {
+                                      setState(() {
+                                        _isCalibrating = false;
+                                        _calibrationReadings = 0;
+                                      });
+                                      // Always stop the session — startSession was already called
+                                      await activityProvider.stopSession();
+                                    },
+                                    icon: const Icon(Icons.close_rounded, size: 18),
+                                    label: const Text('Stop Calibration'),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: const Color(0xFFDC2626),
+                                      side: const BorderSide(color: Color(0xFFDC2626)),
+                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                '${_calibrationReadings}/5 readings',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white60,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -771,121 +839,145 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-            // Floating dock at bottom
-            Positioned(
-              bottom: 30,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 200),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 20,
-                        spreadRadius: 2,
-                        offset: const Offset(0, 8),
+                  ],
+                ),
+              ),
+              _KeepAlive(child: const LeaderboardScreen()),
+              _KeepAlive(child: const ProfileScreen()),
+            ],
+          ),
+          // Floating dock — always visible on all tabs
+          Positioned(
+            bottom: 30,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 320),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.25),
+                      blurRadius: 20,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
                       ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface.withOpacity(0.92),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                          width: 1,
                         ),
-                        decoration: BoxDecoration(
-                          color: isDarkMode
-                              ? Colors.black.withOpacity(0.8)
-                              : Colors.white.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: isDarkMode
-                                ? Colors.white.withOpacity(0.15)
-                                : Colors.black.withOpacity(0.1),
-                            width: 1,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildDockItem(
+                            context: context,
+                            icon: Icons.water_drop_rounded,
+                            isSelected: _selectedTab == 0,
+                            onTap: () => _pageController.animateToPage(0,
+                                duration: const Duration(milliseconds: 380),
+                                curve: Curves.easeInOutCubic),
                           ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Profile button
-                            _buildDockItem(
-                              icon: Icons.person_outline_rounded,
-                              isSelected: false,
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const ProfileScreen(),
-                                  ),
-                                );
-                              },
-                              isDarkMode: isDarkMode,
-                            ),
-                            const SizedBox(width: 12),
-                            // Map icon
-                            _buildDockItem(
-                              icon: Icons.location_city,
-                              isSelected: true,
-                              onTap: () {},
-                              isDarkMode: isDarkMode,
-                            ),
-                            const SizedBox(width: 12),
-                            // Leaderboard icon
-                            _buildDockItem(
-                              icon: Icons.leaderboard_outlined,
-                              isSelected: false,
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const LeaderboardScreen(),
-                                  ),
-                                );
-                              },
-                              isDarkMode: isDarkMode,
-                            ),
-                          ],
-                        ),
+                          const SizedBox(width: 8),
+                          _buildDockItem(
+                            context: context,
+                            icon: Icons.groups_rounded,
+                            isSelected: _selectedTab == 1,
+                            onTap: () => _pageController.animateToPage(1,
+                                duration: const Duration(milliseconds: 380),
+                                curve: Curves.easeInOutCubic),
+                          ),
+                          const SizedBox(width: 8),
+                          _buildDockItem(
+                            context: context,
+                            icon: Icons.location_city,
+                            isSelected: _selectedTab == 2,
+                            onTap: () => _pageController.animateToPage(2,
+                                duration: const Duration(milliseconds: 380),
+                                curve: Curves.easeInOutCubic),
+                          ),
+                          const SizedBox(width: 8),
+                          _buildDockItem(
+                            context: context,
+                            icon: Icons.leaderboard_outlined,
+                            isSelected: _selectedTab == 3,
+                            onTap: () => _pageController.animateToPage(3,
+                                duration: const Duration(milliseconds: 380),
+                                curve: Curves.easeInOutCubic),
+                          ),
+                          const SizedBox(width: 8),
+                          _buildDockItem(
+                            context: context,
+                            icon: Icons.person_outline_rounded,
+                            isSelected: _selectedTab == 4,
+                            onTap: () => _pageController.animateToPage(4,
+                                duration: const Duration(milliseconds: 380),
+                                curve: Curves.easeInOutCubic),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
       ),
     );
   }
 
   Widget _buildDockItem({
+    required BuildContext context,
     required IconData icon,
     required bool isSelected,
     required VoidCallback onTap,
-    required bool isDarkMode,
   }) {
+    final primary = Theme.of(context).colorScheme.primary;
+    final onPrimary = Theme.of(context).colorScheme.onPrimary;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected
-              ? (isDarkMode ? Colors.white : Colors.black87)
-              : Colors.transparent,
+          color: isSelected ? primary : Colors.transparent,
           shape: BoxShape.circle,
         ),
-        child: Icon(
-          icon,
-          color: isSelected
-              ? (isDarkMode ? Colors.black87 : Colors.white)
-              : (isDarkMode ? Colors.white : Colors.black87),
-          size: 24,
+        child: TweenAnimationBuilder<Color?>(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+          tween: ColorTween(
+            begin: onSurface.withOpacity(0.55),
+            end: isSelected ? onPrimary : onSurface.withOpacity(0.55),
+          ),
+          builder: (context, color, child) {
+            return Icon(
+              icon,
+              color: color,
+              size: 24,
+            );
+          },
         ),
       ),
     );
@@ -893,8 +985,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    _pageController.dispose();
     _mapController.dispose();
     _locationService.dispose();
     super.dispose();
   }
 }
+
+// Keeps a PageView child alive so state isn't lost on tab switch
+class _KeepAlive extends StatefulWidget {
+  final Widget child;
+  const _KeepAlive({required this.child});
+  @override
+  State<_KeepAlive> createState() => _KeepAliveState();
+}
+
+class _KeepAliveState extends State<_KeepAlive>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
+  }
+}
+

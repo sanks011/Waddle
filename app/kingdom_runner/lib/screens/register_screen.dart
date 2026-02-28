@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -62,28 +63,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
-        fit: StackFit.expand,
         children: [
-          // Background wallpaper (same as login)
-          Image.asset(
-            'assets/bg-final.png',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFFFDE978), Color(0xFFF5B04A)],
-                  ),
-                ),
-              );
-            },
+          Positioned.fill(
+            child: Image.asset(
+              'assets/bg-final.png',
+              fit: BoxFit.cover,
+            ),
           ),
-
-          // Main Content
           SafeArea(
             child: Stack(
               children: [
@@ -108,12 +96,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: IconButton(
                     icon: Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
                         shape: BoxShape.circle,
-                        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+                        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
                       ),
-                      child: const Icon(Icons.arrow_back, color: Colors.black87, size: 20),
+                      child: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface, size: 20),
                     ),
                     onPressed: () => Navigator.pop(context),
                   ),
@@ -132,26 +120,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(28),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           width: 340,
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.85),
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(
-              color: Colors.black.withOpacity(0.05),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 30,
-                spreadRadius: 2,
-                offset: const Offset(0, 12),
-              ),
-            ],
+        border: Border.all(
+          color: Theme.of(context).dividerColor,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 30,
+            spreadRadius: 2,
+            offset: const Offset(0, 12),
           ),
+        ],
+      ),
           child: Form(
             key: _formKey,
             child: Column(
@@ -163,23 +151,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   width: 72,
                   height: 72,
                 ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Create Account',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
-                    letterSpacing: 1.0,
+                Transform.translate(
+                  offset: const Offset(0, -6),
+                  child: Text(
+                    'Create Account',
+                    style: GoogleFonts.baumans(
+                      textStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 6),
-                const Text(
+                const SizedBox(height: 2),
+                Text(
                   'Join the kingdom',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.black54,
-                    letterSpacing: 0.5,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -191,7 +179,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hint: 'Email',
                     icon: Icons.email_outlined,
                   ),
-                  style: const TextStyle(color: Colors.black87, fontSize: 14),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Enter email';
@@ -208,7 +195,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hint: 'Username',
                     icon: Icons.person_outline,
                   ),
-                  style: const TextStyle(color: Colors.black87, fontSize: 14),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Enter username';
                     if (value.length < 3) return 'Min 3 characters';
@@ -225,7 +211,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hint: 'Password',
                     icon: Icons.lock_outline,
                   ),
-                  style: const TextStyle(color: Colors.black87, fontSize: 14),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Enter password';
                     if (value.length < 6) return 'Min 6 characters';
@@ -242,7 +227,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hint: 'Confirm Password',
                     icon: Icons.lock_outline,
                   ),
-                  style: const TextStyle(color: Colors.black87, fontSize: 14),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Confirm password';
                     if (value != _passwordController.text) return 'Passwords don\'t match';
@@ -255,46 +239,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   width: double.infinity,
                   height: 50,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                        color: const Color(0xFF007AFF),
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF007AFF).withOpacity(0.4),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                    ),
-                    child: ElevatedButton(
-                      onPressed: authProvider.isLoading ? null : _register,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      child: authProvider.isLoading
-                          ? const SizedBox(
-                              height: 22,
-                              width: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : const Text(
-                              'Create Account',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.5,
-                              ),
+                  child: ElevatedButton(
+                    onPressed: authProvider.isLoading ? null : _register,
+                    child: authProvider.isLoading
+                        ? SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).colorScheme.onPrimary),
                             ),
-                    ),
+                          )
+                        : Text(
+                            'Create Account',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -303,17 +266,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       text: 'Already have an account? ',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 13,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                       ),
                       children: [
                         TextSpan(
                           text: 'Sign In',
-                          style: TextStyle(
-                            color: Color(0xFF007AFF),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -332,23 +294,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   InputDecoration _inputDecoration({required String hint, required IconData icon}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.black45, fontSize: 14),
-      prefixIcon: Icon(icon, size: 20, color: Colors.black45),
-      filled: true,
-      fillColor: Colors.grey.shade100,
-      contentPadding: const EdgeInsets.symmetric(vertical: 16),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide.none,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.grey.shade300),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Color(0xFF007AFF), width: 1.5),
-      ),
+      prefixIcon: Icon(icon, size: 20),
     );
   }
 }

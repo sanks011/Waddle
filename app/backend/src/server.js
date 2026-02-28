@@ -9,6 +9,7 @@ const territoryRoutes = require('./routes/territories');
 const sessionRoutes = require('./routes/sessions');
 const leaderboardRoutes = require('./routes/leaderboard');
 const mapsRoutes = require('./routes/maps');
+const eventRoutes = require('./routes/events');
 const { startInactivityChecker } = require('./utils/inactivityChecker');
 
 const app = express();
@@ -34,6 +35,7 @@ app.use('/api/v1/territories', territoryRoutes);
 app.use('/api/v1/sessions', sessionRoutes);
 app.use('/api/v1/leaderboard', leaderboardRoutes);
 app.use('/api/v1/maps', mapsRoutes);
+app.use('/api/v1/events', eventRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

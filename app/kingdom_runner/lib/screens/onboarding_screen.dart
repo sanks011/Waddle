@@ -57,11 +57,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     // Save today's diet entry
-<<<<<<< HEAD
     await GeminiService.saveDietEntry(_dailyProtein, _dailyCalories);
-=======
-    await GeminiService.saveDietEntry(_dailyProtein, _dailyCarbs);
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
 
     await authProvider.saveOnboardingData(
       dateOfBirth: _selectedDOB,
@@ -102,10 +98,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   maxHeight: 700,
                 ),
                 decoration: BoxDecoration(
-<<<<<<< HEAD
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+                  border: Border.all(color: Theme.of(context).dividerColor, width: 1),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.08),
@@ -118,27 +113,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                       spreadRadius: -2,
-=======
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFF064E3B).withOpacity(0.95),
-                      const Color(0xFF065F46).withOpacity(0.95),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: const Color(0xFF10B981).withOpacity(0.3),
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF059669).withOpacity(0.4),
-                      blurRadius: 40,
-                      offset: const Offset(0, 20),
-                      spreadRadius: -5,
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
                     ),
                   ],
                 ),
@@ -154,49 +128,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           Row(
                             children: [
                               Container(
-<<<<<<< HEAD
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   color: const Color(
                                     0xFF10B981,
                                   ).withOpacity(0.1),
-=======
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      const Color(0xFF10B981).withOpacity(0.3),
-                                      const Color(0xFF34D399).withOpacity(0.2),
-                                    ],
-                                  ),
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.restaurant_menu,
-<<<<<<< HEAD
-                                  color: Color(0xFF059669),
+                                  color: Theme.of(context).colorScheme.primary,
                                   size: 22,
-=======
-                                  color: Color(0xFF6EE7B7),
-                                  size: 24,
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              const Expanded(
+                              SizedBox(width: 12),
+                              Expanded(
                                 child: Text(
                                   'Enter Your 5-Day Diet',
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700,
-<<<<<<< HEAD
-                                    color: Color(0xFF111827),
+                                    color: Theme.of(context).colorScheme.onSurface,
                                     letterSpacing: -0.3,
-=======
-                                    color: Color(0xFFF0FDF4),
-                                    letterSpacing: 0.5,
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
                                   ),
                                 ),
                               ),
@@ -212,30 +165,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     },
                                   );
                                 },
-                                icon: const Icon(
+                                icon: Icon(
                                   Icons.close,
                                   size: 20,
-<<<<<<< HEAD
-                                  color: Color(0xFF6B7280),
-=======
-                                  color: Color(0xFFD1FAE5),
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
+                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                                 ),
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          const Text(
+                          SizedBox(height: 8),
+                          Text(
                             'Describe what you ate each day. Be as detailed as possible.',
                             style: TextStyle(
                               fontSize: 13,
-<<<<<<< HEAD
-                              color: Color(0xFF6B7280),
-=======
-                              color: Color(0xFFA7F3D0),
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                             ),
                           ),
                         ],
@@ -257,20 +202,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 children: [
                                   Text(
                                     'Day ${index + 1}',
-                                    style: const TextStyle(
-<<<<<<< HEAD
+                                    style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
-                                      color: Color(0xFF059669),
+                                      color: Theme.of(context).colorScheme.primary,
                                       letterSpacing: 0.3,
-=======
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF6EE7B7),
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  SizedBox(height: 8),
                                   TextField(
                                     controller: localControllers[index],
                                     maxLines: 3,
@@ -278,65 +217,35 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     textInputAction: TextInputAction.newline,
                                     autofocus: index == 0,
                                     enableInteractiveSelection: true,
-                                    style: const TextStyle(
-<<<<<<< HEAD
-                                      color: Color(0xFF111827),
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.onSurface,
                                       fontSize: 14,
-=======
-                                      color: Color(0xFFF0FDF4),
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
                                     ),
                                     decoration: InputDecoration(
                                       hintText:
                                           'e.g., 2 eggs, oatmeal, chicken salad...',
-                                      hintStyle: const TextStyle(
+                                      hintStyle: TextStyle(
                                         fontSize: 13,
-<<<<<<< HEAD
-                                        color: Color(0xFF9CA3AF),
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
                                       ),
                                       filled: true,
-                                      fillColor: const Color(0xFFF9FAFB),
+                                      fillColor: Theme.of(context).colorScheme.surface,
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10),
-                                        borderSide: const BorderSide(
-                                          color: Color(0xFFE5E7EB),
+                                        borderSide: BorderSide(
+                                          color: Theme.of(context).dividerColor,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10),
-                                        borderSide: const BorderSide(
-                                          color: Color(0xFFE5E7EB),
+                                        borderSide: BorderSide(
+                                          color: Theme.of(context).dividerColor,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10),
-                                        borderSide: const BorderSide(
-                                          color: Color(0xFF059669),
-=======
-                                        color: Color(0xFF6EE7B7),
-                                      ),
-                                      filled: true,
-                                      fillColor:
-                                          const Color(0xFF047857).withOpacity(0.3),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(
-                                          color: const Color(0xFF10B981)
-                                              .withOpacity(0.3),
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: const Color(0xFF10B981)
-                                              .withOpacity(0.3),
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: const BorderSide(
-                                          color: Color(0xFF34D399),
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
+                                          color: Theme.of(context).colorScheme.primary,
                                           width: 2,
                                         ),
                                       ),
@@ -355,14 +264,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     Padding(
                       padding: const EdgeInsets.all(24),
                       child: isCalculating
-                          ? const Column(
+                          ? Column(
                               children: [
                                 CircularProgressIndicator(
-<<<<<<< HEAD
-                                  color: Color(0xFF059669),
-=======
-                                  color: Color(0xFF6EE7B7),
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
+                                  color: Theme.of(context).colorScheme.primary,
                                   strokeWidth: 3,
                                 ),
                                 SizedBox(height: 12),
@@ -370,11 +275,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   'Analyzing your diet...',
                                   style: TextStyle(
                                     fontSize: 13,
-<<<<<<< HEAD
-                                    color: Color(0xFF6B7280),
-=======
-                                    color: Color(0xFFA7F3D0),
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                                   ),
                                 ),
                               ],
@@ -414,13 +315,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     final days = foodDays.length;
                                     final avgProtein =
                                         nutritionData['protein']! / days;
-<<<<<<< HEAD
                                     final avgCalories =
                                         nutritionData['calories']! / days;
-=======
-                                    final avgCarbs =
-                                        nutritionData['carbs']! / days;
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
 
                                     // Close dialog first
                                     Navigator.pop(context, true);
@@ -440,14 +336,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                         0.0,
                                         300.0,
                                       );
-<<<<<<< HEAD
                                       _dailyCalories = avgCalories.clamp(
                                         500.0,
                                         5000.0,
                                       );
-=======
-                                      _dailyCarbs = avgCarbs.clamp(0.0, 500.0);
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
                                     });
 
                                     if (mounted) {
@@ -455,7 +347,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                         context,
                                       ).showSnackBar(
                                         SnackBar(
-<<<<<<< HEAD
                                           behavior: SnackBarBehavior.floating,
                                           margin: const EdgeInsets.all(16),
                                           padding: const EdgeInsets.all(16),
@@ -473,7 +364,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                               borderRadius:
                                                   BorderRadius.circular(12),
                                               border: Border.all(
-                                                color: const Color(0xFF10B981),
+                                                color: Theme.of(context).colorScheme.primary,
                                                 width: 1.5,
                                               ),
                                               boxShadow: [
@@ -500,18 +391,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                                           8,
                                                         ),
                                                   ),
-                                                  child: const Icon(
+                                                  child: Icon(
                                                     Icons.check_circle,
-                                                    color: Color(0xFF059669),
+                                                    color: Theme.of(context).colorScheme.primary,
                                                     size: 24,
                                                   ),
                                                 ),
-                                                const SizedBox(width: 12),
+                                                SizedBox(width: 12),
                                                 Expanded(
                                                   child: Text(
                                                     '${avgProtein.toStringAsFixed(0)}g protein, ${avgCalories.toStringAsFixed(0)} kcal per day',
-                                                    style: const TextStyle(
-                                                      color: Color(0xFF111827),
+                                                    style: TextStyle(
+                                                      color: Theme.of(context).colorScheme.onSurface,
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w600,
@@ -521,12 +412,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                               ],
                                             ),
                                           ),
-=======
-                                          content: Text(
-                                            'Calculated: ${avgProtein.toStringAsFixed(0)}g protein, ${avgCarbs.toStringAsFixed(0)}g carbs per day',
-                                          ),
-                                          backgroundColor: Colors.green,
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
                                         ),
                                       );
                                     }
@@ -560,8 +445,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     vertical: 16,
                                   ),
                                   decoration: BoxDecoration(
-<<<<<<< HEAD
-                                    color: const Color(0xFF059669),
+                                    color: Theme.of(context).colorScheme.primary,
                                     borderRadius: BorderRadius.circular(12),
                                     boxShadow: [
                                       BoxShadow(
@@ -570,28 +454,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                         ).withOpacity(0.2),
                                         blurRadius: 8,
                                         offset: const Offset(0, 4),
-=======
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        const Color(0xFF10B981).withOpacity(0.9),
-                                        const Color(0xFF059669).withOpacity(0.9),
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                    borderRadius: BorderRadius.circular(14),
-                                    border: Border.all(
-                                      color: const Color(0xFF34D399)
-                                          .withOpacity(0.4),
-                                      width: 1.5,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xFF10B981)
-                                            .withOpacity(0.3),
-                                        blurRadius: 12,
-                                        offset: const Offset(0, 6),
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
                                       ),
                                     ],
                                   ),
@@ -600,11 +462,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     children: const [
                                       Icon(
                                         Icons.analytics_outlined,
-<<<<<<< HEAD
                                         color: Colors.white,
-=======
-                                        color: Color(0xFFD1FAE5),
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
                                         size: 20,
                                       ),
                                       SizedBox(width: 8),
@@ -657,28 +515,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
-        fit: StackFit.expand,
         children: [
-          // Background
-          Image.asset(
-            'assets/bg-final.png',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFFFDE978), Color(0xFFF5B04A)],
-                  ),
-                ),
-              );
-            },
+          Positioned.fill(
+            child: Image.asset(
+              'assets/bg-final.png',
+              fit: BoxFit.cover,
+            ),
           ),
-
-          // Content
           SafeArea(
             child: Column(
               children: [
@@ -703,15 +548,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(2),
                                   color: i <= _currentPage
-                                      ? Colors.white
-                                      : Colors.white.withOpacity(0.3),
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context).colorScheme.primary.withOpacity(0.3),
                                 ),
                               ),
                             );
                           }),
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16),
                       // Skip button
                       if (_currentPage < _totalPages - 1)
                         GestureDetector(
@@ -719,7 +564,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: Text(
                             'Skip',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
                             ),
@@ -766,11 +611,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               curve: Curves.easeInOut,
                             );
                           },
-                          icon: const Icon(Icons.arrow_back, size: 18),
-                          label: const Text('Back'),
+                          icon: Icon(Icons.arrow_back, size: 18),
+                          label: Text('Back'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.9),
-                            foregroundColor: Colors.black87,
+                            backgroundColor: Theme.of(context).colorScheme.surface,
+                            foregroundColor: Theme.of(context).colorScheme.onSurface,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 20,
                               vertical: 12,
@@ -781,13 +626,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                         )
                       else
-                        const SizedBox(width: 100),
+                        SizedBox(width: 100),
 
-<<<<<<< HEAD
                       // Next Button
-=======
-                      // Next/Finish Button
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
                       if (_currentPage < _totalPages - 1)
                         ElevatedButton.icon(
                           onPressed: () {
@@ -796,12 +637,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               curve: Curves.easeInOut,
                             );
                           },
-                          icon: const Icon(Icons.arrow_forward, size: 18),
-                          label: const Text('Next'),
+                          icon: Icon(Icons.arrow_forward, size: 18),
+                          label: Text('Next'),
                           iconAlignment: IconAlignment.end,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.9),
-                            foregroundColor: Colors.black87,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 20,
                               vertical: 12,
@@ -812,27 +653,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                         )
                       else
-<<<<<<< HEAD
-                        const SizedBox(width: 100),
-=======
-                        ElevatedButton.icon(
-                          onPressed: _completeOnboarding,
-                          icon: const Icon(Icons.check, size: 18),
-                          label: const Text('Finish'),
-                          iconAlignment: IconAlignment.end,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF007AFF),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
+                        SizedBox(width: 100),
                     ],
                   ),
                 ),
@@ -862,27 +683,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     'assets/birthday-calender.svg',
                     width: 56,
                     height: 56,
-                    colorFilter: const ColorFilter.mode(
-                      Colors.black87,
+                    colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.onSurface,
                       BlendMode.srcIn,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'When\'s your birthday?',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black87,
+                      color: Theme.of(context).colorScheme.onSurface,
                       letterSpacing: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     'This helps us personalize your experience',
-                    style: TextStyle(fontSize: 13, color: Colors.black54),
+                    style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
                   ),
-                  const SizedBox(height: 28),
+                  SizedBox(height: 28),
 
                   // iOS-style Date Picker Card
                   Container(
@@ -910,16 +731,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 _selectedDOB != null
                                     ? '${_getMonthName(_selectedDOB!.month)} ${_selectedDOB!.day}, ${_selectedDOB!.year}'
                                     : 'Select Date',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.black,
                                   letterSpacing: -0.408,
                                 ),
                               ),
-                              const Icon(
+                              Icon(
                                 Icons.chevron_right,
-                                color: Color(0xFFFF3B30),
+                                color: Theme.of(context).colorScheme.primary,
                                 size: 20,
                               ),
                             ],
@@ -931,8 +752,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           height: 300,
                           child: Theme(
                             data: ThemeData.light().copyWith(
-                              colorScheme: const ColorScheme.light(
-                                primary: Color(0xFFFF3B30),
+                              colorScheme: ColorScheme.light(
+                                primary: Theme.of(context).colorScheme.primary,
                                 onPrimary: Colors.white,
                                 surface: Colors.white,
                                 onSurface: Colors.black,
@@ -952,7 +773,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   if (!_hasSwipedOnce) _buildSwipeHint(),
                 ],
               ),
@@ -981,27 +802,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     'assets/weight-1.svg',
                     width: 56,
                     height: 56,
-                    colorFilter: const ColorFilter.mode(
-                      Colors.black87,
+                    colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.onSurface,
                       BlendMode.srcIn,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'What\'s your weight?',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black87,
+                      color: Theme.of(context).colorScheme.onSurface,
                       letterSpacing: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     'We\'ll track your progress over time',
-                    style: TextStyle(fontSize: 13, color: Colors.black54),
+                    style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
                   ),
-                  const SizedBox(height: 36),
+                  SizedBox(height: 36),
 
                   // Weight display
                   Row(
@@ -1010,35 +831,35 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     children: [
                       Text(
                         _weight.toStringAsFixed(0),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 64,
                           fontWeight: FontWeight.w800,
-                          color: Colors.black87,
+                          color: Theme.of(context).colorScheme.onSurface,
                           height: 1,
                         ),
                       ),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
                           ' kg',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w500,
-                            color: Colors.black54,
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Slider
                   SliderTheme(
                     data: SliderThemeData(
-                      activeTrackColor: const Color(0xFF007AFF),
-                      inactiveTrackColor: const Color(0x33787880),
+                      activeTrackColor: Theme.of(context).colorScheme.primary,
+                      inactiveTrackColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                       thumbColor: Colors.white,
-                      overlayColor: const Color(0xFF007AFF).withOpacity(0.1),
+                      overlayColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                       trackHeight: 4,
                       thumbShape: const RoundSliderThumbShape(
                         enabledThumbRadius: 14,
@@ -1053,22 +874,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           '30 kg',
-                          style: TextStyle(color: Colors.black45, fontSize: 12),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12),
                         ),
                         Text(
                           '200 kg',
-                          style: TextStyle(color: Colors.black45, fontSize: 12),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12),
                         ),
                       ],
                     ),
                   ),
 
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
                 ],
               ),
             ),
@@ -1096,27 +917,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     'assets/height.svg',
                     width: 56,
                     height: 56,
-                    colorFilter: const ColorFilter.mode(
-                      Colors.black87,
+                    colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.onSurface,
                       BlendMode.srcIn,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'How tall are you?',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black87,
+                      color: Theme.of(context).colorScheme.onSurface,
                       letterSpacing: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     'Helps calculate your fitness metrics',
-                    style: TextStyle(fontSize: 13, color: Colors.black54),
+                    style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
                   ),
-                  const SizedBox(height: 36),
+                  SizedBox(height: 36),
 
                   // Height display
                   Row(
@@ -1125,40 +946,40 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     children: [
                       Text(
                         _heightCm.toStringAsFixed(0),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 64,
                           fontWeight: FontWeight.w800,
-                          color: Colors.black87,
+                          color: Theme.of(context).colorScheme.onSurface,
                           height: 1,
                         ),
                       ),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
                           ' cm',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w500,
-                            color: Colors.black54,
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     '${(_heightCm / 30.48).floor()}\'${((_heightCm / 2.54) % 12).round()}" ft',
-                    style: const TextStyle(fontSize: 15, color: Colors.black54),
+                    style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Slider
                   SliderTheme(
                     data: SliderThemeData(
-                      activeTrackColor: const Color(0xFF007AFF),
-                      inactiveTrackColor: const Color(0x33787880),
+                      activeTrackColor: Theme.of(context).colorScheme.primary,
+                      inactiveTrackColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                       thumbColor: Colors.white,
-                      overlayColor: const Color(0xFF007AFF).withOpacity(0.1),
+                      overlayColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                       trackHeight: 4,
                       thumbShape: const RoundSliderThumbShape(
                         enabledThumbRadius: 14,
@@ -1173,22 +994,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           '100 cm',
-                          style: TextStyle(color: Colors.black45, fontSize: 12),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12),
                         ),
                         Text(
                           '250 cm',
-                          style: TextStyle(color: Colors.black45, fontSize: 12),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12),
                         ),
                       ],
                     ),
                   ),
 
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
                 ],
               ),
             ),
@@ -1216,27 +1037,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     'assets/food-nutrition.svg',
                     width: 56,
                     height: 56,
-                    colorFilter: const ColorFilter.mode(
-                      Colors.black87,
+                    colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.onSurface,
                       BlendMode.srcIn,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'Daily Nutrition',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black87,
+                      color: Theme.of(context).colorScheme.onSurface,
                       letterSpacing: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     'How much do you consume daily?',
-                    style: TextStyle(fontSize: 13, color: Colors.black54),
+                    style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
 
                   // Protein
                   _buildNutrientInput(
@@ -1249,7 +1070,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     icon: Icons.egg_outlined,
                     onChanged: (v) => setState(() => _dailyProtein = v),
                   ),
-                  const SizedBox(height: 28),
+                  SizedBox(height: 28),
 
                   // Calories
                   _buildNutrientInput(
@@ -1263,12 +1084,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     onChanged: (v) => setState(() => _dailyCalories = v),
                   ),
 
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
 
                   // OR divider
                   Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Divider(color: Colors.black12, thickness: 1),
                       ),
                       Padding(
@@ -1278,18 +1099,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black45,
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                             letterSpacing: 1.2,
                           ),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         child: Divider(color: Colors.black12, thickness: 1),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Measure using diet button
                   GestureDetector(
@@ -1302,8 +1123,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFF059669).withOpacity(0.8),
-                            const Color(0xFF10B981).withOpacity(0.8),
+                            Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                            Theme.of(context).colorScheme.primary.withOpacity(0.8),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -1315,13 +1136,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF059669).withOpacity(0.3),
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                             spreadRadius: 0,
                           ),
                           BoxShadow(
-                            color: const Color(0xFF10B981).withOpacity(0.2),
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                             blurRadius: 40,
                             offset: const Offset(0, 16),
                             spreadRadius: -8,
@@ -1351,78 +1172,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 32),
-
-                  // Divider
-                  Container(
-                    height: 1,
-                    color: Colors.black12,
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Measure using diet button
-                  GestureDetector(
-                    onTap: _showDietInputDialog,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            const Color(0xFF059669).withOpacity(0.8),
-                            const Color(0xFF10B981).withOpacity(0.8),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: const Color(0xFF34D399).withOpacity(0.3),
-                          width: 1.5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF059669).withOpacity(0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                            spreadRadius: 0,
-                          ),
-                          BoxShadow(
-                            color: const Color(0xFF10B981).withOpacity(0.2),
-                            blurRadius: 40,
-                            offset: const Offset(0, 16),
-                            spreadRadius: -8,
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Icons.eco_outlined,
-                            color: Color(0xFFD1FAE5),
-                            size: 22,
-                          ),
-                          SizedBox(width: 12),
-                          Text(
-                            'Measure using your diet',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
                 ],
               ),
             ),
@@ -1448,13 +1198,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         Row(
           children: [
             Icon(icon, color: color, size: 20),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const Spacer(),
@@ -1468,7 +1218,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         SliderTheme(
           data: SliderThemeData(
             activeTrackColor: color,
@@ -1509,17 +1259,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withOpacity(0.1),
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.face_retouching_natural,
-                          color: Color(0xFF059669),
+                          color: Theme.of(context).colorScheme.primary,
                           size: 22,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      const Expanded(
+                      SizedBox(width: 12),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -1528,7 +1278,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.black87,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 letterSpacing: -0.3,
                               ),
                             ),
@@ -1537,7 +1287,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               'Pick one that represents you',
                               style: TextStyle(
                                 fontSize: 13,
-                                color: Colors.black54,
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                               ),
                             ),
                           ],
@@ -1546,7 +1296,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   // Selected preview
                   Center(
@@ -1555,26 +1305,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: const Color(0xFF059669),
+                          color: Theme.of(context).colorScheme.primary,
                           width: 3,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF059669).withOpacity(0.2),
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                             blurRadius: 16,
                             spreadRadius: 2,
                           ),
                         ],
                       ),
                       child: CircleAvatar(
-                        radius: 36,
+                        radius: 48,
                         backgroundImage: AssetImage(_selectedAvatar),
-                        backgroundColor: Colors.grey.shade100,
+                        backgroundColor: Theme.of(context).dividerColor.withOpacity(0.2),
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   // Category chips
                   SizedBox(
@@ -1582,7 +1332,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: _avatarCategories.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      separatorBuilder: (_, __) => SizedBox(width: 8),
                       itemBuilder: (context, i) {
                         final isSelected = i == _avatarCategoryIndex;
                         return GestureDetector(
@@ -1595,23 +1345,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? const Color(0xFF059669)
-                                  : const Color(0xFFF3F4F6),
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).dividerColor.withOpacity(0.5),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: isSelected
-                                    ? const Color(0xFF059669)
-                                    : const Color(0xFFE5E7EB),
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).dividerColor,
                               ),
                             ),
                             child: Text(
                               _avatarCategories[i]['name'] as String,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: isSelected
-                                    ? Colors.white
-                                    : Colors.black54,
+                                    ? Theme.of(context).colorScheme.onPrimary
+                                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                                 letterSpacing: 0.2,
                               ),
                             ),
@@ -1621,7 +1371,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Avatar grid
                   SizedBox(
@@ -1630,9 +1380,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       physics: const BouncingScrollPhysics(),
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
                           ),
                       itemCount: count,
                       itemBuilder: (context, i) {
@@ -1646,25 +1396,50 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: isSelected
-                                    ? const Color(0xFF059669)
-                                    : const Color(0xFFE5E7EB),
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).dividerColor,
                                 width: isSelected ? 3 : 1.5,
                               ),
                               boxShadow: isSelected
                                   ? [
                                       BoxShadow(
-                                        color: const Color(
-                                          0xFF059669,
-                                        ).withOpacity(0.25),
-                                        blurRadius: 10,
-                                        spreadRadius: 1,
+                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                        blurRadius: 12,
+                                        spreadRadius: 2,
                                       ),
                                     ]
                                   : null,
                             ),
-                            child: CircleAvatar(
-                              backgroundImage: AssetImage(path),
-                              backgroundColor: Colors.grey.shade100,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                CircleAvatar(
+                                  radius: 40,
+                                  backgroundImage: AssetImage(path),
+                                  backgroundColor: Theme.of(context).dividerColor.withOpacity(0.2),
+                                ),
+                                if (isSelected)
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(2),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primary,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Theme.of(context).colorScheme.surface,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: Icon(
+                                        Icons.check,
+                                        size: 16,
+                                        color: Theme.of(context).colorScheme.onPrimary,
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                         );
@@ -1699,42 +1474,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFF007AFF),
+                      color: Theme.of(context).colorScheme.primary,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF007AFF).withOpacity(0.4),
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
                           blurRadius: 20,
                           offset: const Offset(0, 8),
                         ),
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.check_rounded,
                       size: 48,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  const Text(
+                  SizedBox(height: 24),
+                  Text(
                     'You\'re all set!',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
-                      color: Colors.black87,
+                      color: Theme.of(context).colorScheme.onSurface,
                       letterSpacing: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
+                  SizedBox(height: 12),
+                  Text(
                     'Your profile is ready.\nLet\'s start conquering!',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 15,
-                      color: Colors.black54,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                       height: 1.5,
                     ),
                   ),
-                  const SizedBox(height: 36),
+                  SizedBox(height: 36),
 
                   // Summary
                   if (_selectedDOB != null || _weight != 70 || _heightCm != 170)
@@ -1772,63 +1547,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             '${_dailyProtein.toStringAsFixed(0)} g/day',
                           ),
                           _buildSummaryRow(
-<<<<<<< HEAD
                             Icons.local_fire_department_outlined,
                             'Calories',
                             '${_dailyCalories.toStringAsFixed(0)} kcal/day',
-=======
-                            Icons.grain,
-                            'Carbs',
-                            '${_dailyCarbs.toStringAsFixed(0)} g/day',
->>>>>>> 2ed4fecd9227531f19858abaf36a91a6a7fdffe5
                           ),
                         ],
                       ),
                     ),
 
-                  const SizedBox(height: 28),
+                  SizedBox(height: 28),
 
                   // Go to Dashboard button
                   SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF007AFF),
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF007AFF).withOpacity(0.4),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        onPressed: _completeOnboarding,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Go to Dashboard',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.5,
-                              ),
+                    child: ElevatedButton(
+                      onPressed: _completeOnboarding,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Go to Dashboard',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
                             ),
-                            SizedBox(width: 8),
-                            Icon(Icons.arrow_forward_rounded, size: 20),
-                          ],
-                        ),
+                          ),
+                          SizedBox(width: 8),
+                          Icon(Icons.arrow_forward_rounded, size: 20),
+                        ],
                       ),
                     ),
                   ),
@@ -1846,19 +1594,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: Colors.black54),
-          const SizedBox(width: 10),
+          Icon(icon, size: 18, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
+          SizedBox(width: 10),
           Text(
             label,
-            style: const TextStyle(fontSize: 14, color: Colors.black54),
+            style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
           ),
           const Spacer(),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],
@@ -1875,20 +1623,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(28),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.85),
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
-                color: Colors.black.withOpacity(0.05),
+                color: Theme.of(context).dividerColor,
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withOpacity(0.05),
                   blurRadius: 30,
                   spreadRadius: 2,
                   offset: const Offset(0, 12),
@@ -1903,21 +1651,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildSwipeHint() {
-    return const Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.swipe, size: 18, color: Colors.black45),
+        Icon(Icons.swipe, size: 18, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
         SizedBox(width: 8),
         Text(
           'Swipe to continue',
           style: TextStyle(
-            color: Colors.black45,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
             fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
         ),
         SizedBox(width: 4),
-        Icon(Icons.arrow_forward_ios, size: 12, color: Colors.black45),
+        Icon(Icons.arrow_forward_ios, size: 12, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
       ],
     );
   }

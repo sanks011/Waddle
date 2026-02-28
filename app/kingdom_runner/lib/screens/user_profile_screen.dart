@@ -7,6 +7,7 @@ import '../services/api_service.dart';
 import '../utils/format_utils.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/shimmer_loading.dart';
+import '../widgets/glass_card.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final User user;
@@ -67,11 +68,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     return '#$rank';
   }
 
-  Color _getRankColor(int rank) {
+  Color _getRankColor(BuildContext context, int rank) {
     if (rank == 1) return const Color(0xFFFFD700);
     if (rank == 2) return const Color(0xFFC0C0C0);
     if (rank == 3) return const Color(0xFFCD7F32);
-    return Colors.blueGrey;
+    return Theme.of(context).colorScheme.primary;
   }
 
   String _timeSince(DateTime dt) {
@@ -107,23 +108,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     final user = widget.user;
-    final rankColor = _getRankColor(widget.rank);
+    final rankColor = _getRankColor(context, widget.rank);
 
-    final textPrimary = isDarkMode ? Colors.white : Colors.black87;
-    final textSecondary = isDarkMode
-        ? Colors.white.withOpacity(0.6)
-        : Colors.black.withOpacity(0.55);
-    final cardBg = isDarkMode
-        ? Colors.white.withOpacity(0.06)
-        : Colors.black.withOpacity(0.06);
-    final cardBorder = isDarkMode
-        ? Colors.white.withOpacity(0.12)
-        : Colors.black.withOpacity(0.12);
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withOpacity(0.6);
+    final cardBg = Theme.of(context).colorScheme.surface.withOpacity(0.85);
+    final cardBorder = Theme.of(context).dividerColor;
 
     return Scaffold(
-      backgroundColor: isDarkMode
-          ? const Color(0xFF111318)
-          : const Color(0xFFF2F4F8),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
           // Header
@@ -131,9 +124,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             expandedHeight: 240,
             pinned: true,
             stretch: true,
-            backgroundColor: isDarkMode
-                ? const Color(0xFF1A1D24)
-                : Colors.white,
+            backgroundColor: Colors.transparent,
             leading: IconButton(
               icon: Icon(Icons.arrow_back_ios_new_rounded, color: textPrimary),
               onPressed: () => Navigator.of(context).pop(),
@@ -145,21 +136,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    // Gradient background
+                    // Themed background gradient for the header area
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: isDarkMode
-                              ? [
-                                  const Color(0xFF1E2130),
-                                  const Color(0xFF12151E),
-                                ]
-                              : [
-                                  const Color(0xFFE8EDF5),
-                                  const Color(0xFFF8F9FF),
-                                ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            rankColor.withOpacity(0.18),
+                            Theme.of(context).scaffoldBackgroundColor,
+                          ],
                         ),
                       ),
                     ),
@@ -288,7 +274,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       children: [
                         _statCard(
                           icon: Icons.terrain_rounded,
-                          iconColor: Colors.green,
+                          iconColor: rankColor,
                           label: 'Territory',
                           value: formatArea(user.territorySize),
                           cardBg: cardBg,
@@ -298,7 +284,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         ),
                         _statCard(
                           icon: Icons.directions_run_rounded,
-                          iconColor: Colors.blue,
+                          iconColor: Theme.of(context).colorScheme.primary,
                           label: 'Distance',
                           value: formatDistance(user.totalDistance),
                           cardBg: cardBg,
@@ -308,7 +294,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         ),
                         _statCard(
                           icon: Icons.local_fire_department_rounded,
-                          iconColor: Colors.orange,
+                          iconColor: const Color(0xFFFF6B35),
                           label: 'Streak',
                           value: '${user.activityStreak} days',
                           cardBg: cardBg,
@@ -318,7 +304,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         ),
                         _statCard(
                           icon: Icons.flag_rounded,
-                          iconColor: Colors.purple,
+                          iconColor: Theme.of(context).colorScheme.primary.withOpacity(0.75),
                           label: 'Territories',
                           value: _isLoadingTerritories
                               ? '...'
@@ -347,7 +333,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       children: [
                         _infoRow(
                           Icons.access_time_rounded,
-                          Colors.teal,
+                          Theme.of(context).colorScheme.primary,
                           'Last Active',
                           _timeSince(user.lastActivity),
                           textPrimary,
@@ -356,7 +342,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         _divider(isDarkMode),
                         _infoRow(
                           Icons.calendar_today_rounded,
-                          Colors.indigo,
+                          Theme.of(context).colorScheme.primary,
                           'Member Since',
                           _formatDate(user.createdAt),
                           textPrimary,
@@ -460,55 +446,44 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     required Color textPrimary,
     required Color textSecondary,
   }) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: cardBorder, width: 1.2),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return GlassCard(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: iconColor.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(icon, color: iconColor, size: 18),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: textPrimary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    label,
-                    style: TextStyle(fontSize: 12, color: textSecondary),
-                  ),
-                ],
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: iconColor, size: 18),
               ),
             ],
           ),
-        ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: textPrimary,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: textSecondary),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -519,19 +494,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     required Color cardBorder,
     required List<Widget> children,
   }) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: cardBorder, width: 1.2),
-          ),
-          child: Column(children: children),
-        ),
-      ),
+    return GlassCard(
+      padding: EdgeInsets.zero,
+      child: Column(children: children),
     );
   }
 
@@ -594,66 +559,55 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: cardBg,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: cardBorder, width: 1.2),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(8),
+      child: GlassCard(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: Text(
+                  '$index',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
                   ),
-                  child: Center(
-                    child: Text(
-                      '$index',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Territory #$index',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: textPrimary,
                     ),
                   ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Territory #$index',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        formatArea(territory.area),
-                        style: TextStyle(fontSize: 12, color: textSecondary),
-                      ),
-                    ],
+                  const SizedBox(height: 2),
+                  Text(
+                    formatArea(territory.area),
+                    style: TextStyle(fontSize: 12, color: textSecondary),
                   ),
-                ),
-                Icon(
-                  Icons.terrain_rounded,
-                  color: Colors.green.withOpacity(0.7),
-                  size: 20,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+            Icon(
+              Icons.terrain_rounded,
+              color: Colors.green.withOpacity(0.7),
+              size: 20,
+            ),
+          ],
         ),
       ),
     );

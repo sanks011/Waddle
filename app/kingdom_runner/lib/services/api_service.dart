@@ -5,9 +5,13 @@ import 'package:latlong2/latlong.dart';
 import '../models/user.dart';
 import '../models/territory.dart';
 import '../models/activity_session.dart';
+import '../models/event_room.dart';
+import '../models/chat_message.dart';
 import 'api_config.dart';
 
 class ApiService {
+  static const _timeout = Duration(seconds: 10);
+
   final storage = const FlutterSecureStorage();
   String? _token;
 
@@ -56,15 +60,17 @@ class ApiService {
     String username,
     String password,
   ) async {
+    final url = '${ApiConfig.baseUrl}${ApiConfig.authEndpoint}/register';
+    print('🌐 REGISTER URL: $url');
     final response = await http.post(
-      Uri.parse('${ApiConfig.baseUrl}${ApiConfig.authEndpoint}/register'),
+      Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': email,
         'username': username,
         'password': password,
       }),
-    );
+    ).timeout(_timeout, onTimeout: () => throw Exception('Connection timed out. Check your network.'));
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -82,7 +88,7 @@ class ApiService {
       Uri.parse('${ApiConfig.baseUrl}${ApiConfig.authEndpoint}/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password}),
-    );
+    ).timeout(_timeout, onTimeout: () => throw Exception('Connection timed out. Check your network.'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -141,6 +147,55 @@ class ApiService {
     } catch (e) {
       print('❌ Profile update error: $e');
       return false;
+    }
+  }
+
+  // Update user daily calories goal
+  Future<User?> updateDailyCalories(double calories) async {
+    try {
+      await token;
+      final headers = await getHeaders();
+      final response = await http.put(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.userEndpoint}/me/profile'),
+        headers: headers,
+        body: jsonEncode({'dailyCalories': calories}),
+      );
+
+      if (response.statusCode == 200) {
+        print('✅ Daily calories updated to $calories');
+        return User.fromJson(jsonDecode(response.body));
+      } else {
+        print('⚠️ Calorie update failed: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('❌ Calorie update error: $e');
+      return null;
+    }
+  }
+
+  // Get user activity sessions
+  Future<List<ActivitySession>> getUserSessions() async {
+    try {
+      await token;
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.sessionEndpoint}/my'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        final sessions = data.map((json) => ActivitySession.fromJson(json)).toList();
+        print('📊 Loaded ${sessions.length} activity sessions');
+        return sessions;
+      } else {
+        print('⚠️ Failed to load sessions: ${response.body}');
+        return [];
+      }
+    } catch (e) {
+      print('❌ Session fetch error: $e');
+      return [];
     }
   }
 
@@ -417,6 +472,163 @@ class ApiService {
       return data.map((json) => User.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load leaderboard: ${response.body}');
+    }
+  }
+
+  // ─── Events / Rooms ────────────────────────────────────────────────────────
+
+  Future<List<EventRoom>> getEvents({
+    double? lat,
+    double? lng,
+    double radius = 10000,
+    String search = '',
+  }) async {
+    final headers = await getHeaders();
+    final queryParams = <String, String>{
+      'radius': radius.toString(),
+      if (lat != null) 'lat': lat.toString(),
+      if (lng != null) 'lng': lng.toString(),
+      if (search.isNotEmpty) 'search': search,
+    };
+
+    final uri = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.eventsEndpoint}',
+    ).replace(queryParameters: queryParams);
+
+    final response = await http.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      final List<dynamic> data = decoded['events'] as List<dynamic>? ?? [];
+      return data.map((j) => EventRoom.fromJson(j as Map<String, dynamic>)).toList();
+    } else {
+      throw Exception('Failed to load events: ${response.body}');
+    }
+  }
+
+  Future<EventRoom> getEvent(String eventId) async {
+    final headers = await getHeaders();
+    final response = await http.get(
+      Uri.parse('${ApiConfig.baseUrl}${ApiConfig.eventsEndpoint}/$eventId'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      return EventRoom.fromJson(decoded['event'] as Map<String, dynamic>);
+    } else {
+      throw Exception('Failed to load event: ${response.body}');
+    }
+  }
+
+  Future<EventRoom> createEvent({
+    required String title,
+    String description = '',
+    required double lat,
+    required double lng,
+    required bool isPublic,
+    String? password,
+  }) async {
+    final headers = await getHeaders();
+    final body = <String, dynamic>{
+      'title': title,
+      'description': description,
+      'lat': lat,
+      'lng': lng,
+      'isPublic': isPublic,
+      if (password != null && password.isNotEmpty) 'password': password,
+    };
+
+    final response = await http.post(
+      Uri.parse('${ApiConfig.baseUrl}${ApiConfig.eventsEndpoint}'),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      return EventRoom.fromJson(decoded['event'] as Map<String, dynamic>);
+    } else {
+      throw Exception('Failed to create event: ${response.body}');
+    }
+  }
+
+  Future<EventRoom> joinEvent(String eventId, {String? password}) async {
+    final headers = await getHeaders();
+    final body = <String, dynamic>{
+      if (password != null && password.isNotEmpty) 'password': password,
+    };
+
+    final response = await http.post(
+      Uri.parse(
+        '${ApiConfig.baseUrl}${ApiConfig.eventsEndpoint}/$eventId/join',
+      ),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      return EventRoom.fromJson(decoded['event'] as Map<String, dynamic>);
+    } else {
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      throw Exception(decoded['error'] ?? decoded['message'] ?? 'Failed to join event');
+    }
+  }
+
+  Future<void> deleteEvent(String eventId) async {
+    final headers = await getHeaders();
+    final response = await http.delete(
+      Uri.parse('${ApiConfig.baseUrl}${ApiConfig.eventsEndpoint}/$eventId'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete event: ${response.body}');
+    }
+  }
+
+  Future<List<ChatMessage>> getMessages(
+    String eventId, {
+    String? before,
+  }) async {
+    final headers = await getHeaders();
+    final queryParams = <String, String>{
+      if (before != null) 'before': before,
+    };
+
+    final uri = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.eventsEndpoint}/$eventId/messages',
+    ).replace(queryParameters: queryParams);
+
+    final response = await http.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      final List<dynamic> data = decoded['messages'] as List<dynamic>? ?? [];
+      return data
+          .map((j) => ChatMessage.fromJson(j as Map<String, dynamic>))
+          .toList();
+    } else {
+      throw Exception('Failed to load messages: ${response.body}');
+    }
+  }
+
+  Future<ChatMessage> sendMessage(String eventId, String content) async {
+    final headers = await getHeaders();
+    final response = await http.post(
+      Uri.parse(
+        '${ApiConfig.baseUrl}${ApiConfig.eventsEndpoint}/$eventId/messages',
+      ),
+      headers: headers,
+      body: jsonEncode({'content': content}),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      return ChatMessage.fromJson(decoded['message'] as Map<String, dynamic>);
+    } else {
+      throw Exception('Failed to send message: ${response.body}');
     }
   }
 }

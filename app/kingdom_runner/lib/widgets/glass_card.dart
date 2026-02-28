@@ -21,26 +21,25 @@ class GlassCard extends StatelessWidget {
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius ?? 12),
-      child: Container(
-        decoration: BoxDecoration(
-          color: isDark
-              ? const Color(0xFF18181B) // Shadcn zinc-900
-              : Colors.white,
-          borderRadius: BorderRadius.circular(borderRadius ?? 12),
-          border: Border.all(
-            color: isDark
-                ? const Color(0xFF27272A) // Shadcn zinc-800
-                : const Color(0xFFE4E4E7), // Shadcn zinc-200
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.85),
+            borderRadius: BorderRadius.circular(borderRadius ?? 12),
+            border: Border.all(
+              color: Theme.of(context).dividerColor,
+              width: 1,
             ),
-          ],
-        ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 30,
+                offset: const Offset(0, 12),
+                spreadRadius: 2,
+              ),
+            ],
+          ),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -51,6 +50,7 @@ class GlassCard extends StatelessWidget {
               child: child,
             ),
           ),
+        ),
         ),
       ),
     );

@@ -77,7 +77,6 @@ class OlaMapsConfig {
   static String getTileUrl({bool isDark = false}) {
     // Use OpenStreetMap/CartoDB as primary provider (no rate limits)
     // Ola Maps has strict rate limiting and causes 429 errors
-    print('🗺️ Using OpenStreetMap tiles (free, no rate limits)');
     return isDark
         ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
         : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';

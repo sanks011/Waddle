@@ -1,6 +1,6 @@
 {
-    "name": "kingdom_runner",
-    "short_name": "kingdom_runner",
+    "name": "Waddle",
+    "short_name": "Waddle",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

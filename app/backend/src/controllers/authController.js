@@ -93,3 +93,32 @@ exports.getCurrentUser = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+// Update user profile
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const { dailyCalories, weight, height, dailyProtein } = req.body;
+    const userId = req.user._id;
+
+    const updateData = {};
+    if (dailyCalories !== undefined) updateData.dailyCalories = dailyCalories;
+    if (weight !== undefined) updateData.weight = weight;
+    if (height !== undefined) updateData.height = height;
+    if (dailyProtein !== undefined) updateData.dailyProtein = dailyProtein;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(updatedUser);
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ error: 'Server error during profile update' });
+  }
+};

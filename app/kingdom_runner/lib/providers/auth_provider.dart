@@ -16,6 +16,7 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isAuthenticated => _currentUser != null;
+  ApiService get apiService => _apiService;
 
   Future<bool> register(String email, String username, String password) async {
     _isLoading = true;
@@ -82,9 +83,47 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> tryAutoLogin() async {
     try {
+      // Primary: use stored JWT token — no network re-login needed
+      final token = await _apiService.token;
+      if (token != null && token.isNotEmpty) {
+        try {
+          _currentUser = await _apiService.getCurrentUser();
+          // Merge locally-saved avatar
+          if (_currentUser != null) {
+            final prefs = await SharedPreferences.getInstance();
+            final savedAvatar = prefs.getString('onboarding_avatar');
+            if (_currentUser!.avatarPath == null && savedAvatar != null) {
+              _currentUser = User(
+                id: _currentUser!.id,
+                email: _currentUser!.email,
+                username: _currentUser!.username,
+                totalDistance: _currentUser!.totalDistance,
+                territorySize: _currentUser!.territorySize,
+                activityStreak: _currentUser!.activityStreak,
+                lastActivity: _currentUser!.lastActivity,
+                createdAt: _currentUser!.createdAt,
+                dateOfBirth: _currentUser!.dateOfBirth,
+                weight: _currentUser!.weight,
+                height: _currentUser!.height,
+                dailyProtein: _currentUser!.dailyProtein,
+                dailyCalories: _currentUser!.dailyCalories,
+                avatarPath: savedAvatar,
+                onboardingCompleted: _currentUser!.onboardingCompleted,
+              );
+            }
+            notifyListeners();
+            return true;
+          }
+        } catch (e) {
+          // Token expired/invalid — clear it and fall through to password
+          print('Token auto-login failed: $e');
+          await _apiService.clearToken();
+        }
+      }
+
+      // Fallback: stored email + password (legacy / token-less devices)
       final savedEmail = await _storage.read(key: 'saved_email');
       final savedPassword = await _storage.read(key: 'saved_password');
-
       if (savedEmail != null && savedPassword != null) {
         return await login(savedEmail, savedPassword, rememberMe: false);
       }
