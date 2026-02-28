@@ -104,7 +104,12 @@ class ActivityProvider extends ChangeNotifier {
 
       // If path has at least 1 point, try to create territory
       String? territoryId;
+      print(
+        '🔍 Checking if should create territory: pathCopy.isNotEmpty = ${pathCopy.isNotEmpty}, length = ${pathCopy.length}',
+      );
+
       if (pathCopy.isNotEmpty) {
+        print('✅ Starting territory creation process...');
         try {
           // Test connection first
           final isConnected = await _apiService.testConnection();
@@ -125,10 +130,13 @@ class ActivityProvider extends ChangeNotifier {
           print('✅ Territory created successfully: ${territory.id}');
           print('📊 Territory area: ${territory.area} m²');
           territoryId = territory.id;
-        } catch (e) {
+        } catch (e, stackTrace) {
           print('⚠️ Territory creation failed: $e');
+          print('📚 Stack trace: $stackTrace');
           // Don't fail the session if territory creation fails
         }
+      } else {
+        print('❌ Skipping territory creation: path is empty');
       }
 
       // Create final session instance with territoryId (if created)

@@ -506,8 +506,11 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: (activityProvider.isTracking ? Colors.red : Colors.green)
-                  .withOpacity(0.3),
+              color:
+                  ((activityProvider.isTracking || _isCalibrating)
+                          ? Colors.red
+                          : Colors.green)
+                      .withOpacity(0.3),
               blurRadius: 15,
               spreadRadius: 1,
             ),
@@ -515,7 +518,21 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: FloatingActionButton.extended(
           onPressed: () async {
-            if (activityProvider.isTracking) {
+            if (activityProvider.isTracking || _isCalibrating) {
+              // Stop calibration if it was in progress
+              if (_isCalibrating) {
+                setState(() {
+                  _isCalibrating = false;
+                  _calibrationReadings = 0;
+                });
+
+                // If session hasn't started tracking yet, just stop the session
+                if (!activityProvider.isTracking) {
+                  await activityProvider.stopSession();
+                  return;
+                }
+              }
+
               final session = await activityProvider.stopSession();
 
               if (session != null && mounted) {
@@ -614,18 +631,20 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           },
           icon: Icon(
-            activityProvider.isTracking ? Icons.stop : Icons.play_arrow,
+            (activityProvider.isTracking || _isCalibrating)
+                ? Icons.stop
+                : Icons.play_arrow,
             size: 28,
           ),
           label: Text(
-            activityProvider.isTracking ? 'Stop' : 'Start',
+            (activityProvider.isTracking || _isCalibrating) ? 'Stop' : 'Start',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
             ),
           ),
-          backgroundColor: activityProvider.isTracking
+          backgroundColor: (activityProvider.isTracking || _isCalibrating)
               ? Colors.red
               : Colors.green,
           elevation: 0,
