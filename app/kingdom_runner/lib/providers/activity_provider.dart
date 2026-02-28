@@ -70,15 +70,43 @@ class ActivityProvider extends ChangeNotifier {
     );
 
     try {
-      final session = await _apiService.completeSession(
+      // Complete the session first
+      var completedSession = await _apiService.completeSession(
         _currentSession!.id,
         _currentSession!,
       );
 
+      // If path has enough points, try to create territory
+      if (_currentPath.length >= 3) {
+        try {
+          print(
+            'Attempting to create territory with ${_currentPath.length} points',
+          );
+          final territory = await _apiService.createTerritory(_currentSession!);
+          print('✅ Territory created successfully: ${territory.id}');
+
+          // Create new session instance with territoryId
+          completedSession = ActivitySession(
+            id: completedSession.id,
+            userId: completedSession.userId,
+            path: completedSession.path,
+            distance: completedSession.distance,
+            startTime: completedSession.startTime,
+            endTime: completedSession.endTime,
+            isCompleted: completedSession.isCompleted,
+            formsClosedLoop: completedSession.formsClosedLoop,
+            territoryId: territory.id,
+          );
+        } catch (e) {
+          print('⚠️ Territory creation failed: $e');
+          // Don't fail the session if territory creation fails
+        }
+      }
+
       notifyListeners();
-      return session;
+      return completedSession;
     } catch (e) {
-      print('Error completing session: $e');
+      print('❌ Error completing session: $e');
       notifyListeners();
       return _currentSession;
     }

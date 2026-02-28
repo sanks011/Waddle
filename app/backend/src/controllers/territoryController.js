@@ -18,18 +18,22 @@ exports.createTerritory = async (req, res) => {
   try {
     const { path, formsClosedLoop } = req.body;
 
-    if (!formsClosedLoop) {
-      return res.status(400).json({ error: 'Path must form a closed loop' });
-    }
+    console.log(`Creating territory for user ${req.user.username}`);
+    console.log(`Path length: ${path ? path.length : 0}, Forms loop: ${formsClosedLoop}`);
 
     if (!path || path.length < 3) {
-      return res.status(400).json({ error: 'Invalid path' });
+      return res.status(400).json({ error: 'Path needs at least 3 points', path: path });
     }
 
     // Calculate area
     const area = calculatePolygonArea(path);
+    console.log(`Calculated area: ${area.toFixed(2)} m²`);
 
-    // Create territory
+    if (area < 1) {
+      return res.status(400).json({ error: 'Territory area too small (minimum 1 m²)', area });
+    }
+
+    // Create territory even if not a perfect closed loop
     const territory = new Territory({
       userId: req.user._id,
       username: req.user.username,
@@ -38,6 +42,7 @@ exports.createTerritory = async (req, res) => {
     });
 
     await territory.save();
+    console.log(`✅ Territory created: ${territory._id}`);
 
     // Update user's total territory size
     const userTerritories = await Territory.find({ 
@@ -46,15 +51,17 @@ exports.createTerritory = async (req, res) => {
     });
     const totalArea = userTerritories.reduce((sum, t) => sum + t.area, 0);
     
-    await User.findByIdAndUpdate(req.user._id, {
+    const user = await User.findByIdAndUpdate(req.user._id, {
       territorySize: totalArea,
       lastActivity: new Date(),
-    });
+    }, { new: true });
+    
+    console.log(`✅ Updated user ${req.user.username} territory size to ${totalArea.toFixed(2)} m²`);
 
     res.status(201).json(territory);
   } catch (error) {
     console.error('Create territory error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error creating territory', details: error.message });
   }
 };
 
