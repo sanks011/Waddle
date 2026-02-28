@@ -2,6 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide the native cursor on pointer (mouse) devices only */
+@media (pointer: fine) {
+  html {
+    cursor: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    cursor: inherit !important;
+  }
+
+  /* Restore pointer cursor on interactive elements */
+  a, button, [role="button"], label, select,
+  input[type="submit"], input[type="button"], input[type="reset"],
+  [tabindex]:not([tabindex="-1"]) {
+    cursor: pointer !important;
+  }
+}
+
+html {
+  border-radius: 16px;
+  overflow-x: hidden;
+  scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+body {
+  overflow-x: hidden;
+}
+
 @layer base {
   :root {
     /* ── Brand palette (light) ─────────────────────────── */
@@ -67,6 +101,9 @@
     --chart-4:              263 70% 50%;
     --chart-5:              263 60% 41%;
   }
+  .theme {
+    --animate-gradient:           gradient 8s linear infinite;
+  }
 }
 
 @layer base {
@@ -82,4 +119,12 @@
 @keyframes scrollLine {
   0%   { transform: translateY(-100%); }
   100% { transform: translateY(100%); }
+}
+
+@theme inline {
+  @keyframes gradient {
+  to {
+    background-position:           var(--bg-size, 300%) 0;
+    }
+  }
 }
