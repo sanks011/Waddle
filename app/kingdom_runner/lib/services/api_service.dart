@@ -120,6 +120,30 @@ class ApiService {
     }
   }
 
+  // Update user profile (onboarding data)
+  Future<bool> updateProfile(Map<String, dynamic> profileData) async {
+    try {
+      await token;
+      final headers = await getHeaders();
+      final response = await http.put(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.userEndpoint}/me/profile'),
+        headers: headers,
+        body: jsonEncode(profileData),
+      );
+
+      if (response.statusCode == 200) {
+        print('✅ Profile updated successfully');
+        return true;
+      } else {
+        print('⚠️ Profile update failed: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('❌ Profile update error: $e');
+      return false;
+    }
+  }
+
   // Territory endpoints
   Future<List<Territory>> getTerritories() async {
     await token;

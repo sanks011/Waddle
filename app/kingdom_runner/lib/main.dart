@@ -7,6 +7,7 @@ import 'providers/theme_provider.dart';
 import 'services/ola_maps_config.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -75,9 +76,17 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
     });
 
     if (success && mounted) {
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
+      // Check if onboarding is completed
+      final onboardingDone = await authProvider.isOnboardingCompleted;
+      if (onboardingDone) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+        );
+      }
     }
   }
 

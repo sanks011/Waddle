@@ -8,6 +8,14 @@ class User {
   final DateTime lastActivity;
   final DateTime createdAt;
 
+  // Onboarding fields
+  final DateTime? dateOfBirth;
+  final double? weight; // in kg
+  final double? height; // in cm
+  final double? dailyProtein; // in grams
+  final double? dailyCarbs; // in grams
+  final bool onboardingCompleted;
+
   User({
     required this.id,
     required this.email,
@@ -17,6 +25,12 @@ class User {
     required this.activityStreak,
     required this.lastActivity,
     required this.createdAt,
+    this.dateOfBirth,
+    this.weight,
+    this.height,
+    this.dailyProtein,
+    this.dailyCarbs,
+    this.onboardingCompleted = false,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -33,6 +47,18 @@ class User {
       createdAt: DateTime.parse(
         json['createdAt'] ?? DateTime.now().toIso8601String(),
       ),
+      dateOfBirth: json['dateOfBirth'] != null
+          ? DateTime.tryParse(json['dateOfBirth'])
+          : null,
+      weight: json['weight'] != null ? (json['weight']).toDouble() : null,
+      height: json['height'] != null ? (json['height']).toDouble() : null,
+      dailyProtein: json['dailyProtein'] != null
+          ? (json['dailyProtein']).toDouble()
+          : null,
+      dailyCarbs: json['dailyCarbs'] != null
+          ? (json['dailyCarbs']).toDouble()
+          : null,
+      onboardingCompleted: json['onboardingCompleted'] ?? false,
     );
   }
 
@@ -46,6 +72,12 @@ class User {
       'activityStreak': activityStreak,
       'lastActivity': lastActivity.toIso8601String(),
       'createdAt': createdAt.toIso8601String(),
+      if (dateOfBirth != null) 'dateOfBirth': dateOfBirth!.toIso8601String(),
+      if (weight != null) 'weight': weight,
+      if (height != null) 'height': height,
+      if (dailyProtein != null) 'dailyProtein': dailyProtein,
+      if (dailyCarbs != null) 'dailyCarbs': dailyCarbs,
+      'onboardingCompleted': onboardingCompleted,
     };
   }
 }
