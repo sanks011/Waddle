@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Download, ArrowUpRight, Smartphone, Play } from "lucide-react";
 
 const footerLinks = {
@@ -42,17 +43,17 @@ export function Footer() {
 
       {/* ── CTA Banner ─────────────────────────────────────── */}
       <div className="bg-[#0c1f00] px-6 py-16">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="flex flex-col items-center justify-between gap-8 mx-auto max-w-7xl md:flex-row">
           <div className="text-center md:text-left">
             <h2 className="font-serif text-[clamp(2rem,4vw,3rem)] font-bold text-white leading-tight mb-3">
               Ready to claim your first<br className="hidden md:block" />
               <span className="italic text-[#96cc00]"> territory?</span>
             </h2>
-            <p className="font-roboto text-white/50 max-w-sm">
+            <p className="max-w-sm font-roboto text-white/50">
               Lace up. Step outside. Your kingdom starts the moment you take your first step.
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <Link
               href="#download"
               className="font-roboto inline-flex items-center gap-2.5 bg-[#96cc00] text-[#0c1f00] font-bold px-7 py-3.5 rounded-full text-sm hover:bg-[#a8e000] transition-colors duration-200 whitespace-nowrap"
@@ -70,22 +71,20 @@ export function Footer() {
       </div>
 
       {/* ── Main footer body ───────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-6 py-14">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-12">
+      <div className="px-6 mx-auto max-w-7xl py-14">
+        <div className="grid grid-cols-2 gap-12 sm:grid-cols-3 lg:grid-cols-5">
 
           {/* Brand column */}
-          <div className="col-span-2 sm:col-span-3 lg:col-span-2 flex flex-col gap-5">
+          <div className="flex flex-col col-span-2 gap-5 sm:col-span-3 lg:col-span-2">
             {/* Logo */}
             <div className="flex items-center gap-2.5">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-[#1e4002]">
-                <path
-                  d="M3 18h18M5 18V9l4 4 3-7 3 7 4-4v9"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <Image
+                src="/penguin.svg"
+                alt="Waddle"
+                width={40}
+                height={40}
+                className="object-contain"
+              />
               <span className="font-serif text-[1.1rem] font-bold text-[#1e4002] tracking-tight">
                 Waddle
               </span>
@@ -95,13 +94,6 @@ export function Footer() {
             </p>
             {/* App badges */}
             <div className="flex gap-3">
-              <Link
-                href="#"
-                className="font-roboto flex items-center gap-2 bg-[#f4ffe0] border border-[#c8e87a]/50 rounded-xl px-3.5 py-2.5 text-[11px] font-semibold text-[#1e4002] hover:bg-[#96cc00]/15 transition-colors duration-200"
-              >
-                <Smartphone size={13} strokeWidth={2} className="text-[#78a300]" />
-                App Store
-              </Link>
               <Link
                 href="#"
                 className="font-roboto flex items-center gap-2 bg-[#f4ffe0] border border-[#c8e87a]/50 rounded-xl px-3.5 py-2.5 text-[11px] font-semibold text-[#1e4002] hover:bg-[#96cc00]/15 transition-colors duration-200"
@@ -124,9 +116,9 @@ export function Footer() {
                   <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
                 </svg>
               </SocialIcon>
-              <SocialIcon href="#" label="TikTok">
-                <svg width="12" height="13" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.71a8.18 8.18 0 004.78 1.52V6.74a4.85 4.85 0 01-1.01-.05z" />
+              <SocialIcon href="#" label="LinkedIn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                 </svg>
               </SocialIcon>
             </div>
@@ -157,7 +149,7 @@ export function Footer() {
 
       {/* ── Bottom bar ─────────────────────────────────────── */}
       <div className="border-t border-[#e0e7ff]">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="flex flex-col items-center justify-between gap-3 px-6 py-5 mx-auto max-w-7xl sm:flex-row">
           <p className="font-roboto text-xs text-[#1e4002]/35">
             © {new Date().getFullYear()} Waddle. All rights reserved.
           </p>

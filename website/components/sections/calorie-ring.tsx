@@ -100,20 +100,8 @@ export function CalorieRing() {
   return (
     <div ref={ref} className="flex flex-col items-center gap-4">
 
-      {/* Ring + glow wrapper */}
+      {/* Ring — no glow wrapper */}
       <div className="relative flex items-center justify-center">
-
-        {/* Glow halo behind the ring */}
-        <div
-          className="absolute rounded-full pointer-events-none"
-          style={{
-            width:      "130%",
-            height:     "130%",
-            background: `radial-gradient(circle, ${zone.glow} 0%, transparent 70%)`,
-            filter:     "blur(10px)",
-            transition: "background 0.6s ease",
-          }}
-        />
 
         {/* Progress ring */}
         <AnimatedCircularProgressBar

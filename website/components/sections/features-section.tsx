@@ -1,6 +1,8 @@
-import { Castle, ShieldAlert, Zap, Check } from "lucide-react";
+import { Castle, ShieldAlert, Zap } from "lucide-react";
 import { CalorieRing } from "@/components/sections/calorie-ring";
 import { WaterTracker } from "@/components/sections/water-tracker";
+import { DailyGoals } from "@/components/sections/daily-goals";
+import { TerritoryMap } from "@/components/sections/territory-map";
 
 /* ── Tiny reusable sub-components ─────────────────────── */
 
@@ -13,37 +15,7 @@ function SectionPill({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ── Territory Map SVG mockup ─────────────────────────── */
-function TerritoryMap() {
-  // 8×6 grid — encode: 1=yours, 2=yours-edge, 3=enemy, 0=neutral
-  const grid = [
-    [0, 0, 0, 0, 1, 1, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 0],
-    [0, 0, 1, 1, 1, 2, 1, 0],
-    [0, 1, 1, 1, 2, 0, 0, 0],
-    [0, 1, 1, 2, 0, 3, 3, 0],
-    [0, 0, 2, 0, 0, 3, 0, 0],
-  ];
-
-  const cellClass: Record<number, string> = {
-    1: "bg-[#96cc00]",
-    2: "bg-[#78a300]",
-    3: "bg-red-500/70",
-    0: "bg-white/[0.06]",
-  };
-
-  return (
-    <div className="territory-grid w-full max-w-[220px] mx-auto">
-      {grid.flat().map((v, i) => (
-        <div
-          key={i}
-          className={`territory-cell ${cellClass[v]} rounded-[3px]`}
-          style={{ aspectRatio: "1" }}
-        />
-      ))}
-    </div>
-  );
-}
+/* DailyGoals + TerritoryMap are interactive client components — see their respective files */
 
 /* ── Defense Items mockup ─────────────────────────────── */
 function DefenseItems() {
@@ -83,7 +55,7 @@ function DefenseItems() {
         >
           {/* Icon bubble */}
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            className="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-xl"
             style={{ background: item.iconBg }}
           >
             <item.Icon size={18} color={item.color} strokeWidth={2} />
@@ -127,7 +99,7 @@ function ProteinLog() {
 
   return (
     <div className="flex flex-col gap-2.5 w-full">
-      <div className="flex justify-between items-center mb-1">
+      <div className="flex items-center justify-between mb-1">
         <span className="font-roboto text-xs font-semibold text-[#1e4002]/60 uppercase tracking-wider">Today</span>
         <span className="font-roboto text-xs font-bold text-[#8b5cf6]">
           {current}g <span className="font-normal text-[#1e4002]/40">/ {goal}g protein</span>
@@ -153,59 +125,22 @@ function ProteinLog() {
   );
 }
 
-/* ── Daily Goals ──────────────────────────────────────── */
-function DailyGoals() {
-  const goals = [
-    { label: "Burn 500 kcal", done: true },
-    { label: "Walk 6,000 steps", done: true },
-    { label: "Drink 8 glasses", done: false },
-    { label: "Hit 120g protein", done: false },
-    { label: "Defend territory", done: true },
-  ];
-
-  return (
-    <div className="flex flex-col gap-2.5 w-full">
-      <div className="flex items-center justify-between mb-1">
-        <span className="font-roboto text-xs font-semibold text-[#1e4002]/60 uppercase tracking-wider">Daily Quest</span>
-        <span className="font-roboto text-xs bg-[#96cc00]/20 text-[#78a300] font-bold px-2 py-0.5 rounded-full">
-          3 / 5
-        </span>
-      </div>
-      {goals.map((g) => (
-        <div key={g.label} className="flex items-center gap-3">
-          <div
-            className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
-              g.done ? "bg-[#96cc00]" : "border-2 border-[#e0e7ff]"
-            }`}
-          >
-            {g.done && <Check size={11} color="white" strokeWidth={3} />}
-          </div>
-          <span
-            className={`font-roboto text-sm ${
-              g.done ? "line-through text-[#1e4002]/40" : "text-[#1e4002] font-medium"
-            }`}
-          >
-            {g.label}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
+/* DailyGoals is now an interactive client component — see daily-goals.tsx */
 
 /* ══════════════════════════════════════════════════════
    MAIN FEATURE SECTION
 ════════════════════════════════════════════════════════ */
 export function FeaturesSection() {
   return (
-    <section id="features" className="bg-white">
+    <section id="features" className="bg-[#000000] relative z-10" style={{ marginTop: -2 }}>
+      {/* ── Soft blur transition from hero using radial gradient & border radius ───────── */}
+      <div className="bg-white w-full rounded-t-[40px] sm:rounded-t-[60px] pt-12 mt-4 relative overflow-hidden">
+        {/* Subtle top inner shadow/glow to blend edge */}
+        <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-[#f8f8f8] to-transparent pointer-events-none" />
 
-      {/* ── Bridge from black hero ─────────────────── */}
-      <div className="h-24 bg-gradient-to-b from-black to-white" />
-
-      {/* ── Section header ────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-6 pt-8 pb-20">
-        <div className="flex flex-col items-center text-center mb-16 gap-4">
+        {/* ── Section header ────────────────────────── */}
+        <div className="px-6 pt-12 pb-20 mx-auto max-w-7xl relative z-10">
+        <div className="flex flex-col items-center gap-4 mb-16 text-center">
           <SectionPill>What You Get</SectionPill>
           <h2 className="font-serif text-[clamp(2.4rem,5vw,4rem)] font-bold text-[#1e4002] leading-[1.1] tracking-tight max-w-2xl">
             Walk more.<br />
@@ -234,35 +169,11 @@ export function FeaturesSection() {
             />
             {/* Map card */}
             <div className="relative z-10 bg-[#1e4002]/60 backdrop-blur border border-[#96cc00]/20 rounded-2xl p-5 w-full max-w-[280px]">
-              {/* Mini status bar */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="font-roboto text-[10px] text-[#96cc00] font-bold tracking-widest uppercase">Live Map</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#96cc00] animate-pulse" />
-                </div>
-                <span className="font-roboto text-[10px] text-white/40">Zone A-7</span>
-              </div>
               <TerritoryMap />
-              {/* Legend */}
-              <div className="flex items-center gap-4 mt-4 pt-3 border-t border-white/10">
-                {[
-                  { color: "#96cc00", label: "Your turf" },
-                  { color: "#ef4444", label: "Enemy" },
-                  { color: "rgba(255,255,255,0.1)", label: "Open" },
-                ].map((l) => (
-                  <div key={l.label} className="flex items-center gap-1.5">
-                    <span
-                      className="w-2.5 h-2.5 rounded-[2px]"
-                      style={{ background: l.color }}
-                    />
-                    <span className="font-roboto text-[9px] text-white/40">{l.label}</span>
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* Floating stat pills */}
-            <div className="relative z-10 flex gap-3 flex-wrap justify-center">
+            <div className="relative z-10 flex flex-wrap justify-center gap-3">
               {[
                 { val: "2.4 km²", label: "Territory" },
                 { val: "12 days", label: "Streak" },
@@ -288,7 +199,7 @@ export function FeaturesSection() {
               Own it.<br />
               <span className="italic text-[#96cc00]">Defend it.</span>
             </h3>
-            <p className="font-roboto text-white/50 text-base leading-relaxed mb-8 max-w-sm">
+            <p className="max-w-sm mb-8 text-base leading-relaxed font-roboto text-white/50">
               Every route you walk daily becomes your territory on the real map. Skip a day? Someone else can challenge it. Your streaks literally guard your kingdom.
             </p>
             <ul className="flex flex-col gap-3">
@@ -303,7 +214,7 @@ export function FeaturesSection() {
                       <path d="M1 3l2 2 4-4" stroke="#96cc00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </span>
-                  <span className="font-roboto text-white/60 text-sm">{item}</span>
+                  <span className="text-sm font-roboto text-white/60">{item}</span>
                 </li>
               ))}
             </ul>
@@ -317,7 +228,7 @@ export function FeaturesSection() {
         <div className="rounded-3xl bg-[#dbeafe] overflow-hidden mb-6 grid grid-cols-1 lg:grid-cols-2 min-h-[400px]">
 
           {/* Left — text */}
-          <div className="flex flex-col justify-center p-10 lg:p-14 order-2 lg:order-1">
+          <div className="flex flex-col justify-center order-2 p-10 lg:p-14 lg:order-1">
             <p className="font-roboto text-[#4338ca] text-xs font-bold tracking-[0.2em] uppercase mb-4">
               02 — Kingdom Defense
             </p>
@@ -348,7 +259,7 @@ export function FeaturesSection() {
           </div>
 
           {/* Right — defense items mockup */}
-          <div className="relative flex flex-col items-center justify-center gap-6 p-10 order-1 lg:order-2">
+          <div className="relative flex flex-col items-center justify-center order-1 gap-6 p-10 lg:order-2">
             {/* Faint pattern */}
             <div
               className="absolute inset-0 opacity-[0.06]"
@@ -367,7 +278,7 @@ export function FeaturesSection() {
             {/* XP badge */}
             <div className="relative z-10 inline-flex items-center gap-2 bg-[#4338ca] text-white rounded-full px-5 py-2.5 text-sm font-semibold shadow-lg">
               <span className="font-roboto">+240 XP</span>
-              <span className="font-roboto text-white/60 text-xs font-normal">from last defense</span>
+              <span className="text-xs font-normal font-roboto text-white/60">from last defense</span>
             </div>
           </div>
         </div>
@@ -375,7 +286,7 @@ export function FeaturesSection() {
         {/* ════════════════════════════════════════════
             BENTO GRID — 4 smaller feature cards
         ═══════════════════════════════════════════*/}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 
           {/* Card 3 — Calorie Burn */}
           <div className="rounded-3xl border border-[#e0e7ff] bg-[#f4ffe0] p-8 flex flex-col gap-6">
@@ -449,7 +360,8 @@ export function FeaturesSection() {
         {/* ── End bento grid ─────────────────────── */}
 
       </div>
-      {/* ── End max-w container ────────────────────── */}
+      {/* ── End inner white wrapper ────────────────────── */}
+      </div>
     </section>
   );
 }
