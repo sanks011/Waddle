@@ -54,7 +54,21 @@ module.exports = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
+  			},
+  			brand: {
+  				lime:   '#96cc00',
+  				dark:   '#1e4002',
+  				soft:   '#f4ffe0',
+  				purple: '#8b5cf6',
+  				indigo: '#4338ca',
+  				blue:   '#dbeafe',
   			}
+  		},
+  		fontFamily: {
+  			sans:   ['var(--font-geist-sans)', 'sans-serif'],
+  			mono:   ['var(--font-geist-mono)', 'monospace'],
+  			serif:  ['var(--font-playfair)', 'serif'],
+  			roboto: ['var(--font-roboto)', 'sans-serif'],
   		},
   		keyframes: {
   			scrollLine: {

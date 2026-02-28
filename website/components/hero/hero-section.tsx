@@ -18,7 +18,7 @@ export function HeroSection() {
         {/* ── Tiny badge ──────────────────────────────────── */}
         <div className="inline-flex items-center gap-2 border border-white/15 rounded-full px-4 py-1.5 mb-8">
           <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
-          <span className="text-[0.7rem] text-white/50 tracking-[0.22em] uppercase font-[family-name:var(--font-geist-sans)]">
+          <span className="text-[0.7rem] text-white/50 tracking-[0.22em] uppercase font-sans">
             Gamified Cardio · Walk &amp; Jog
           </span>
         </div>
@@ -29,19 +29,19 @@ export function HeroSection() {
           Line 1 — lighter / regular weight → sets the subject
           Line 2 — italic bold         → lands the punch
         */}
-        <h1 className="font-[family-name:var(--font-playfair)] leading-[1.08] select-none">
+        <h1 className="font-serif leading-[1.08] select-none">
           {/* line 1 */}
-          <span className="block text-[clamp(3rem,8vw,6.5rem)] font-[400] text-white/90 tracking-[-0.02em]">
+          <span className="block text-[clamp(3rem,8vw,6.5rem)] font-normal text-white/90 tracking-[-0.02em]">
             Every Step,
           </span>
           {/* line 2 */}
-          <span className="block text-[clamp(3rem,8vw,6.5rem)] font-[700] italic text-white tracking-[-0.025em]">
+          <span className="block text-[clamp(3rem,8vw,6.5rem)] font-bold italic text-white tracking-[-0.025em]">
             A New Quest.
           </span>
         </h1>
 
         {/* ── Subtitle ────────────────────────────────────── */}
-        <p className="mt-6 max-w-md text-[clamp(0.875rem,1.5vw,1rem)] text-white/40 font-[family-name:var(--font-geist-sans)] leading-relaxed tracking-wide">
+        <p className="mt-6 max-w-md text-[clamp(0.875rem,1.5vw,1rem)] text-white/40 font-sans leading-relaxed tracking-wide">
           Walk, jog, or sprint — and watch your kingdom grow.<br className="hidden sm:block" />
           Earn rewards, beat quests, and actually enjoy moving.
         </p>
