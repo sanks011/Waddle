@@ -135,7 +135,7 @@ const StyledWrapper = styled.div`
 export function DownloadButton() {
   return (
     <StyledWrapper>
-      <a href="https://drive.google.com/drive/folders/137GuT_BcmqmQyyOlTVwn508Pw_9RgTBp?usp=sharing" className="cta-btn" target="_blank" rel="noopener noreferrer">
+      <a href="https://drive.google.com/file/d/12zGIvbeipZedkQSO6W4AAn041vkK7iw-/view?usp=sharing" className="cta-btn" target="_blank" rel="noopener noreferrer">
         <span className="cta-text-group">
           <span className="cta-label">Download</span>
         </span>

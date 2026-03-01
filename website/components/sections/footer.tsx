@@ -55,7 +55,7 @@ export function Footer() {
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Link
-              href="https://drive.google.com/drive/folders/137GuT_BcmqmQyyOlTVwn508Pw_9RgTBp?usp=sharing"
+              href="https://drive.google.com/file/d/12zGIvbeipZedkQSO6W4AAn041vkK7iw-/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
               className="font-roboto inline-flex items-center gap-2.5 bg-[#96cc00] text-[#0c1f00] font-bold px-7 py-3.5 rounded-full text-sm hover:bg-[#a8e000] transition-colors duration-200 whitespace-nowrap"
